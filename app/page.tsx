@@ -1472,7 +1472,7 @@ export default function Dashboard() {
                             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                             month: "space-y-4",
                             caption: "flex flex-row justify-between items-center pt-1 relative",
-                            caption_label: "text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center",
+                            caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
                             nav: "flex items-center gap-1",
                             nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
                             nav_button_previous: "",
@@ -1483,11 +1483,11 @@ export default function Dashboard() {
                             row: "flex w-full mt-2",
                             cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                             day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white text-[16px]",
-                            day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
+                            day_selected: "font-medium bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                            day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                             day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                             day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                            day_range_middle: "aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
+                            day_range_middle: "text-sm aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
                             day_hidden: "invisible",
                           }}
                         />
@@ -1550,7 +1550,7 @@ export default function Dashboard() {
                         <div className="space-y-4">
                           <DayPicker
                             mode="single"
-                            selected={tempSelectedDateTime}ㅁ
+                            selected={tempSelectedDateTime}
                             onSelect={handleDateTimeSelect}
                             locale={ko}
                             navLayout="around"
@@ -1559,7 +1559,7 @@ export default function Dashboard() {
                               months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                               month: "space-y-4",
                               caption: "flex flex-row justify-between items-center pt-1 relative",
-                              caption_label: "text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center",
+                              caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
                               nav: "flex items-center gap-1",
                               nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
                               nav_button_previous: "",
@@ -1570,11 +1570,11 @@ export default function Dashboard() {
                               row: "flex w-full mt-2",
                               cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                               day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                              day_selected: "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white text-[16px]",
-                              day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
+                              day_selected: "font-medium bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                              day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                               day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                               day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                              day_range_middle: "aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
+                              day_range_middle: "font-medium aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
                               day_hidden: "invisible",
                             }}
                           />
@@ -1620,6 +1620,9 @@ export default function Dashboard() {
                                     const newDate = new Date(tempSelectedDateTime);
                                     newDate.setHours(parseInt(hours), parseInt(minutes));
                                     setTempSelectedDateTime(newDate);
+                                    // 시간 적용 시 바로 저장 및 팝오버 닫기
+                                    setSelectedDateTime(newDate);
+                                    setDateTimePickerOpen(false);
                                   }
                                 }}
                                 className="ml-auto h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
@@ -1628,20 +1631,6 @@ export default function Dashboard() {
                               </button>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                          <button
-                            onClick={handleDateTimeCancel}
-                            className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-                          >
-                            취소
-                          </button>
-                          <button
-                            onClick={handleDateTimeConfirm}
-                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
-                          >
-                            확인
-                          </button>
                         </div>
                       </Popover.Content>
                     </Popover.Portal>
@@ -1699,7 +1688,7 @@ export default function Dashboard() {
                             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                             month: "space-y-4",
                             caption: "flex flex-row justify-between items-center pt-1 relative",
-                            caption_label: "text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center",
+                            caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
                             nav: "flex items-center gap-1",
                             nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
                             nav_button_previous: "",
@@ -1710,10 +1699,10 @@ export default function Dashboard() {
                             row: "flex w-full mt-2",
                             cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
                             day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white text-[16px]",
-                            day_range_start: "bg-blue-500 dark:bg-blue-600 text-white rounded-l-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white text-[16px]",
-                            day_range_end: "bg-blue-500 dark:bg-blue-600 text-white rounded-r-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white text-[16px]",
-                            day_range_middle: "aria-selected:bg-blue-50 dark:aria-selected:bg-blue-900/30 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
+                            day_selected: "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                            day_range_start: "bg-blue-500 dark:bg-blue-600 text-white rounded-l-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                            day_range_end: "bg-blue-500 dark:bg-blue-600 text-white rounded-r-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                            day_range_middle: "aria-selected:bg-blue-50 dark:aria-selected:bg-blue-900/30 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
                             day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                             day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                             day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
