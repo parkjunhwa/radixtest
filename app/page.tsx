@@ -1597,15 +1597,6 @@ export default function Dashboard() {
                         }
                       ];
 
-                      const handleCopyCode = async (code: string, type: string) => {
-                        try {
-                          await navigator.clipboard.writeText(code);
-                          setCopyToastOpen(true);
-                        } catch (err) {
-                          console.error("복사 실패:", err);
-                        }
-                      };
-
                       return (
                         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
                           {icons.map((icon, index) => (
@@ -2689,15 +2680,15 @@ export default function Dashboard() {
                             nav_button_next: "",
                             table: "w-full border-collapse space-y-1",
                             head_row: "flex",
-                            head_cell: "text-gray-500 dark:text-gray-400 rounded-md w-9 font-normal text-xs",
+                            head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
                             row: "flex w-full mt-2",
-                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "font-medium bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
+                            day_selected: "font-medium bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
                             day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                             day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                             day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                            day_range_middle: "text-sm aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
+                            day_range_middle: "text-sm aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
                             day_hidden: "invisible",
                           }}
                         />
@@ -2776,15 +2767,15 @@ export default function Dashboard() {
                               nav_button_next: "",
                               table: "w-full border-collapse space-y-1",
                               head_row: "flex",
-                              head_cell: "text-gray-500 dark:text-gray-400 rounded-md w-9 font-normal text-xs",
+                              head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
                               row: "flex w-full mt-2",
-                              cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                              day_selected: "font-medium bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
+                              cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
+                              day_selected: "font-medium bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
                               day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                               day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                               day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                              day_range_middle: "font-medium aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
+                              day_range_middle: "font-medium aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
                               day_hidden: "invisible",
                             }}
                           />
@@ -2905,14 +2896,14 @@ export default function Dashboard() {
                             nav_button_next: "",
                             table: "w-full border-collapse space-y-1",
                             head_row: "flex",
-                            head_cell: "text-gray-500 dark:text-gray-400 rounded-md w-9 font-normal text-xs",
+                            head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
                             row: "flex w-full mt-2",
-                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 dark:[&:has([aria-selected])]:bg-blue-900/30 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
-                            day_range_start: "bg-blue-500 dark:bg-blue-600 text-white rounded-l-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
-                            day_range_end: "bg-blue-500 dark:bg-blue-600 text-white rounded-r-md hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white focus:bg-blue-500 dark:focus:bg-blue-600 focus:text-white !text-[16px]",
-                            day_range_middle: "aria-selected:bg-blue-50 dark:aria-selected:bg-blue-900/30 aria-selected:text-gray-900 dark:aria-selected:text-gray-100 !text-[16px]",
+                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
+                            day_selected: "font-normal bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_start: "font-normal bg-blue-500 text-white rounded-l-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_end: "font-normal bg-blue-500 text-white rounded-r-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_middle: "font-normal aria-selected:bg-blue-50 aria-selected:text-gray-900",
                             day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
                             day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
                             day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
@@ -2928,7 +2919,7 @@ export default function Dashboard() {
                           </button>
                           <button
                             onClick={handleDateRangeConfirm}
-                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
+                            className="ml-auto h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
                           >
                             확인
                           </button>
@@ -3623,7 +3614,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex flex-col items-center justify-center py-12 text-center">
                       <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                       </svg>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">데이터가 없습니다</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">새로운 데이터를 추가해보세요</p>
@@ -3671,7 +3662,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* 빈 카드 예시 */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-6">
                   {[
                     { title: "저장된 항목", count: 0, icon: "📁" },
                     { title: "즐겨찾기", count: 0, icon: "⭐" },
@@ -3688,7 +3679,7 @@ export default function Dashboard() {
                                   aria-label={`${item.title} 안내`}
                                   className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
                                 >
-                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                 </button>
@@ -3727,7 +3718,7 @@ export default function Dashboard() {
                             aria-label="상태 안내"
                             className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
                           >
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </button>
@@ -4246,9 +4237,12 @@ export default function Dashboard() {
 
             {/* Inset */}
             <Card title="Inset">
-              <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
+              <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 flex flex-col gap-2" >
                 <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">이것은 Inset 컴포넌트 예시입니다. 내용이 중첩된 컨테이너 안에 표시됩니다.</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">이것은 Inset 컴포넌트 예시입니다.</p>
+                </div>
+                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">내용이 중첩된 컨테이너 안에 표시됩니다.</p>
                 </div>
               </div>
             </Card>
