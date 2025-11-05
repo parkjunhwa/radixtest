@@ -80,6 +80,12 @@ export default function Dashboard() {
   const [dateTimePickerOpen, setDateTimePickerOpen] = React.useState(false);
   const [dateRangePickerOpen, setDateRangePickerOpen] = React.useState(false);
   const [timeValue, setTimeValue] = React.useState({ hours: "00", minutes: "00" });
+  const [autocompleteValue, setAutocompleteValue] = React.useState("");
+  const [autocompleteOpen, setAutocompleteOpen] = React.useState(false);
+  const [selectedAutocompleteItem, setSelectedAutocompleteItem] = React.useState<string | null>(null);
+  const [multiAutocompleteValue, setMultiAutocompleteValue] = React.useState("");
+  const [multiAutocompleteOpen, setMultiAutocompleteOpen] = React.useState(false);
+  const [selectedMultiAutocompleteItems, setSelectedMultiAutocompleteItems] = React.useState<string[]>([]);
 
   // 검색 필터링
   const filteredItems = React.useMemo(() => {
@@ -95,6 +101,67 @@ export default function Dashboard() {
       item.toLowerCase().includes(searchTextRight.toLowerCase())
     );
   }, [searchTextRight]);
+
+  // Autocomplete 필터링
+  const autocompleteFilteredItems = React.useMemo(() => {
+    if (!autocompleteValue.trim()) return sampleItems;
+    const lowerValue = autocompleteValue.toLowerCase();
+    const filtered = sampleItems.filter(item =>
+      item.toLowerCase().includes(lowerValue)
+    );
+    
+    // 정확히 일치하는 항목을 우선 표시
+    const exactMatch = sampleItems.find(item => 
+      item.toLowerCase() === lowerValue
+    );
+    
+    if (exactMatch) {
+      return [exactMatch, ...filtered.filter(item => item !== exactMatch)];
+    }
+    
+    // 입력한 값이 목록에 없으면 입력한 값 자체를 추가
+    const hasExactMatch = filtered.some(item => 
+      item.toLowerCase() === lowerValue
+    );
+    
+    if (!hasExactMatch && autocompleteValue.trim()) {
+      return [autocompleteValue, ...filtered];
+    }
+    
+    return filtered;
+  }, [autocompleteValue]);
+
+  // Multi Autocomplete 필터링
+  const multiAutocompleteFilteredItems = React.useMemo(() => {
+    if (!multiAutocompleteValue.trim()) {
+      // 입력값이 없으면 선택되지 않은 항목만 표시
+      return sampleItems.filter(item => !selectedMultiAutocompleteItems.includes(item));
+    }
+    const lowerValue = multiAutocompleteValue.toLowerCase();
+    const filtered = sampleItems.filter(item =>
+      item.toLowerCase().includes(lowerValue) && !selectedMultiAutocompleteItems.includes(item)
+    );
+    
+    // 정확히 일치하는 항목을 우선 표시
+    const exactMatch = sampleItems.find(item => 
+      item.toLowerCase() === lowerValue && !selectedMultiAutocompleteItems.includes(item)
+    );
+    
+    if (exactMatch) {
+      return [exactMatch, ...filtered.filter(item => item !== exactMatch)];
+    }
+    
+    // 입력한 값이 목록에 없으면 입력한 값 자체를 추가
+    const hasExactMatch = filtered.some(item => 
+      item.toLowerCase() === lowerValue
+    );
+    
+    if (!hasExactMatch && multiAutocompleteValue.trim()) {
+      return [multiAutocompleteValue, ...filtered];
+    }
+    
+    return filtered;
+  }, [multiAutocompleteValue, selectedMultiAutocompleteItems]);
 
   // 삭제 핸들러
   const handleClearSearch = () => {
@@ -1422,6 +1489,264 @@ export default function Dashboard() {
                       </svg>
                     </div>
                   </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Autocomplete */}
+            <Card title="Autocomplete">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="autocomplete" className="text-xs text-gray-500 dark:text-gray-400">
+                    기본 Autocomplete
+                  </Label.Root>
+                  <Popover.Root 
+                    open={autocompleteOpen} 
+                    onOpenChange={setAutocompleteOpen}
+                  >
+                    <Popover.Anchor asChild>kl
+                      <div className="relative">
+                        <input
+                          id="autocomplete"
+                          type="text"
+                          placeholder="기술 스택을 검색하세요"
+                          value={autocompleteValue}
+                          onChange={(e) => {
+                            setAutocompleteValue(e.target.value);
+                            setAutocompleteOpen(true);
+                          }}
+                          onFocus={() => {
+                            setAutocompleteOpen(true);
+                          }}
+                          className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                        {autocompleteValue && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setAutocompleteValue("");
+                              setSelectedAutocompleteItem(null);
+                              setAutocompleteOpen(false);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
+                            aria-label="삭제"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                        {selectedAutocompleteItem && (
+                          <div className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
+                            선택됨
+                          </div>
+                        )}
+                      </div>
+                    </Popover.Anchor>
+                    {autocompleteOpen && autocompleteFilteredItems.length > 0 && (
+                      <Popover.Content
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                        onInteractOutside={(e) => {
+                          // 입력 필드나 팝오버 내부 클릭이 아닌 경우에만 닫기
+                          const target = e.target as HTMLElement;
+                          const isInput = target.id === 'autocomplete' || target.closest('[id="autocomplete"]');
+                          const isPopoverContent = target.closest('[data-radix-popover-content]');
+                          
+                          if (!isInput && !isPopoverContent) {
+                            setAutocompleteOpen(false);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
+                      >
+                        <ScrollArea.Root className="w-full">
+                          <ScrollArea.Viewport className="w-full">
+                            <div className="py-1">
+                              {autocompleteFilteredItems.map((item, index) => {
+                                const isCustomItem = index === 0 && !sampleItems.includes(item);
+                                return (
+                                  <button
+                                    key={`${item}-${index}`}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault(); // 포커스가 input에서 벗어나지 않도록
+                                    }}
+                                    onClick={() => {
+                                      setAutocompleteValue(item);
+                                      setSelectedAutocompleteItem(item);
+                                      setAutocompleteOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${
+                                      selectedAutocompleteItem === item
+                                        ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                        : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    }`}
+                                  >
+                                    {isCustomItem && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
+                                    )}
+                                    {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea.Viewport>
+                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
+                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+                          </ScrollArea.Scrollbar>
+                        </ScrollArea.Root>
+                      </Popover.Content>
+                    )}
+                  </Popover.Root>
+                  {selectedAutocompleteItem && (
+                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">선택된 항목:</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedAutocompleteItem}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Multi Autocomplete */}
+            <Card title="Multi Autocomplete">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
+                    멀티 선택 Autocomplete (Chip 형태)
+                  </Label.Root>
+                  <Popover.Root 
+                    open={multiAutocompleteOpen} 
+                    onOpenChange={setMultiAutocompleteOpen}
+                  >
+                    <Popover.Anchor asChild>
+                      <div className="relative min-h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent flex flex-wrap gap-1 items-center">
+                        {/* 선택된 항목들 (Chip) */}
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <div
+                            key={`${item}-${index}`}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-blue-500 dark:bg-blue-600 text-white text-sm"
+                          >
+                            <span>{item}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSelectedMultiAutocompleteItems(prev => 
+                                  prev.filter(selectedItem => selectedItem !== item)
+                                );
+                                setMultiAutocompleteOpen(true);
+                              }}
+                              className="hover:bg-blue-600 dark:hover:bg-blue-700 rounded-sm p-0.5 transition-colors"
+                              aria-label={`${item} 제거`}
+                            >
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                        {/* 입력 필드 */}
+                        <input
+                          id="multiautocomplete"
+                          type="text"
+                          placeholder={selectedMultiAutocompleteItems.length === 0 ? "기술 스택을 검색하세요" : ""}
+                          value={multiAutocompleteValue}
+                          onChange={(e) => {
+                            setMultiAutocompleteValue(e.target.value);
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          onFocus={() => {
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          className="flex-1 min-w-[120px] h-[24px] bg-transparent text-sm text-left focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                      </div>
+                    </Popover.Anchor>
+                    {multiAutocompleteOpen && multiAutocompleteFilteredItems.length > 0 && (
+                      <Popover.Content
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                        onInteractOutside={(e) => {
+                          const target = e.target as HTMLElement;
+                          const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
+                          const isPopoverContent = target.closest('[data-radix-popover-content]');
+                          
+                          if (!isInput && !isPopoverContent) {
+                            setMultiAutocompleteOpen(false);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
+                      >
+                        <ScrollArea.Root className="w-full">
+                          <ScrollArea.Viewport className="w-full">
+                            <div className="py-1">
+                              {multiAutocompleteFilteredItems.map((item, index) => {
+                                const isCustomItem = index === 0 && !sampleItems.includes(item);
+                                return (
+                                  <button
+                                    key={`${item}-${index}`}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                    }}
+                                    onClick={() => {
+                                      if (!selectedMultiAutocompleteItems.includes(item)) {
+                                        setSelectedMultiAutocompleteItems(prev => [...prev, item]);
+                                        setMultiAutocompleteValue("");
+                                        setMultiAutocompleteOpen(true);
+                                      }
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${
+                                      selectedMultiAutocompleteItems.includes(item)
+                                        ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                        : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    }`}
+                                  >
+                                    {isCustomItem && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
+                                    )}
+                                    {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea.Viewport>
+                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
+                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+                          </ScrollArea.Scrollbar>
+                        </ScrollArea.Root>
+                      </Popover.Content>
+                    )}
+                  </Popover.Root>
+                  {selectedMultiAutocompleteItems.length > 0 && (
+                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        선택된 항목 ({selectedMultiAutocompleteItems.length}개):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <span
+                            key={`${item}-${index}`}
+                            className="text-xs px-2 py-1 rounded-sm bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
