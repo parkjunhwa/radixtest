@@ -1,0 +1,23 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 theme configuration directive"
+    }
+  ],
+  "properties": [
+    {
+      "name": "text-size-adjust",
+      "description": "Controls the text inflation algorithm. Used with -webkit-text-size-adjust for full browser support.",
+      "status": "standard",
+      "browsers": ["Chrome 54+", "Edge 79+", "Firefox (uses -webkit- prefix)", "Safari (uses -webkit- prefix)"]
+    },
+    {
+      "name": "-webkit-text-size-adjust",
+      "description": "WebKit-specific version of text-size-adjust for Safari and iOS. Required for Safari/iOS support.",
+      "status": "standard",
+      "browsers": ["Safari", "iOS Safari", "Chrome (also supports standard)", "Edge (also supports standard)"]
+    }
+  ]
+}

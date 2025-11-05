@@ -1,26 +1,218 @@
 @import "tailwindcss";
 
+/*
+ * Global Styles
+ * 
+ * Note: Using -webkit-text-size-adjust for cross-browser compatibility.
+ * This property is supported by Safari, iOS, Chrome, and Edge.
+ */
+
+
+/* stylelint-disable-next-line */
+/* Tailwind CSS v4 theme configuration - @theme is a valid Tailwind directive */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Text size adjust for cross-browser compatibility */
+/* Both properties are needed: -webkit- for Safari/iOS, standard for Chrome/Edge/Firefox */
+html,
+:host {
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* 라이트 모드 기본 스타일 명시 */
+body:not(.dark) {
+  background: #ffffff;
+  color: #171717;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.animate-slideUp {
+  animation: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.animate-fadeIn {
+  animation: fadeIn 200ms ease-in-out;
+}
+
+/* Button and Input Size System */
+.btn-sm,
+.input-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 0.875rem;
+}
+
+.btn-md,
+.input-md {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+}
+
+.btn,
+.input {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 0.875rem;
+}
+
+/* Masonry Grid - 해상도별 컬럼 수 조정 */
+.masonry-grid {
+  columns: 1;
+  column-gap: 1.5rem;
+}
+
+/* 두 배 폭 카드 (모든 컬럼에 걸침) */
+.masonry-grid .card-wide {
+  column-span: all;
+  break-inside: avoid;
+}
+
+/* Small screens (640px 이상) */
+@media (min-width: 640px) {
+  .masonry-grid {
+    columns: 2;
+  }
+}
+
+/* Medium screens (768px 이상) */
+@media (min-width: 768px) {
+  .masonry-grid {
+    columns: 3;
+  }
+}
+
+/* Large screens (1024px 이상) */
+@media (min-width: 1024px) {
+  .masonry-grid {
+    columns: 4;
+  }
+}
+
+/* XL screens (1280px 이상) */
+@media (min-width: 1280px) {
+  .masonry-grid {
+    columns: 5;
+  }
+}
+
+/* 2XL screens (1536px 이상) */
+@media (min-width: 1536px) {
+  .masonry-grid {
+    columns: 6;
+  }
+}
+
+/* 3XL screens (1920px 이상) - 7단 */
+@media (min-width: 1920px) {
+  .masonry-grid {
+    columns: 7;
+  }
+}
+
+/* 4XL screens (2560px 이상) - 8단 */
+@media (min-width: 2560px) {
+  .masonry-grid {
+    columns: 8;
+  }
+}
+
+/* 5XL screens (3200px 이상) - 9단 */
+@media (min-width: 3200px) {
+  .masonry-grid {
+    columns: 9;
+  }
+}
+
+/* 6XL screens (3840px 이상) - 10단 */
+@media (min-width: 3840px) {
+  .masonry-grid {
+    columns: 10;
+  }
+}
+
+/* 7XL screens (4480px 이상) - 11단 */
+@media (min-width: 4480px) {
+  .masonry-grid {
+    columns: 11;
+  }
+}
+
+/* 8XL screens (5120px 이상) - 12단 */
+@media (min-width: 5120px) {
+  .masonry-grid {
+    columns: 12;
+  }
+}
+
+.masonry-grid .column-span-all {
+  column-span: all;
+}
+
+/* Fix Tailwind base styles: remove vertical-align from block-level elements */
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  vertical-align: unset !important;
 }

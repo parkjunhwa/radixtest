@@ -1,0 +1,27 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "css.lint.unknownProperties": "ignore",
+  "css.lint.validProperties": [
+    "text-size-adjust",
+    "-webkit-text-size-adjust"
+  ],
+  "css.customData": [
+    ".vscode/css_custom_data.json"
+  ],
+  "css.validate": false,
+  "css.lint.compatibleVendorPrefixes": "ignore",
+  "css.lint.vendorPrefix": "ignore",
+  "css.completion.completePropertyWithSemicolon": true,
+  "css.completion.triggerPropertyValueCompletion": true,
+  "problems.showCurrentInStatus": true,
+  "problems.decorations.enabled": true,
+  "problems.sortOrder": "severity",
+  "files.exclude": {
+    "**/.next": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/node_modules": true
+  }
+}
+
