@@ -2669,6 +2669,14 @@ export default function Dashboard() {
                           locale={ko}
                           navLayout="around"
                           className="rdp"
+                          modifiers={{
+                            sunday: (date) => date.getDay() === 0,
+                            saturday: (date) => date.getDay() === 6,
+                          }}
+                          modifiersClassNames={{
+                            sunday: "rdp-day-sunday",
+                            saturday: "rdp-day-saturday",
+                          }}
                           classNames={{
                             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                             month: "space-y-4",
@@ -2756,6 +2764,14 @@ export default function Dashboard() {
                             locale={ko}
                             navLayout="around"
                             className="rdp"
+                            modifiers={{
+                              sunday: (date) => date.getDay() === 0,
+                              saturday: (date) => date.getDay() === 6,
+                            }}
+                            modifiersClassNames={{
+                              sunday: "rdp-day-sunday",
+                              saturday: "rdp-day-saturday",
+                            }}
                             classNames={{
                               months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                               month: "space-y-4",
@@ -2885,6 +2901,14 @@ export default function Dashboard() {
                           numberOfMonths={2}
                           navLayout="around"
                           className="rdp"
+                          modifiers={{
+                            sunday: (date) => date.getDay() === 0,
+                            saturday: (date) => date.getDay() === 6,
+                          }}
+                          modifiersClassNames={{
+                            sunday: "rdp-day-sunday",
+                            saturday: "rdp-day-saturday",
+                          }}
                           classNames={{
                             months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                             month: "space-y-4",
@@ -4255,7 +4279,7 @@ export default function Dashboard() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm hover:shadow-lg transition-all duration-200 ring-1 ring-gray-100 dark:ring-gray-800">
+    <div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6 shadow-sm hover:shadow-lg transition-all duration-200 ring-1 ring-gray-100 dark:ring-gray-800">
       {title && <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>}
       {children}
     </div>
