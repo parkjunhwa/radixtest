@@ -196,25 +196,6 @@ export default function Dashboard() {
     setTempSelectedDateTime(date);
   };
 
-  // 날짜+시간 확인 핸들러
-  const handleDateTimeConfirm = () => {
-    if (tempSelectedDateTime) {
-      // 시간 설정
-      const hours = timeValue.hours.padStart(2, "0");
-      const minutes = timeValue.minutes.padStart(2, "0");
-      const newDate = new Date(tempSelectedDateTime);
-      newDate.setHours(parseInt(hours), parseInt(minutes));
-      setSelectedDateTime(newDate);
-    }
-    setDateTimePickerOpen(false);
-  };
-
-  // 날짜+시간 취소 핸들러
-  const handleDateTimeCancel = () => {
-    setTempSelectedDateTime(selectedDateTime);
-    setDateTimePickerOpen(false);
-  };
-
   // 날짜 범위 선택 핸들러 (임시 상태에만 저장)
   const handleDateRangeSelect = (range: { from: Date | undefined; to?: Date | undefined } | undefined) => {
     if (range) {
@@ -1504,7 +1485,7 @@ export default function Dashboard() {
                     open={autocompleteOpen} 
                     onOpenChange={setAutocompleteOpen}
                   >
-                    <Popover.Anchor asChild>kl
+                    <Popover.Anchor asChild>
                       <div className="relative">
                         <input
                           id="autocomplete"
