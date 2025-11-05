@@ -54,8 +54,11 @@ export default function Dashboard() {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openAlertDialog, setOpenAlertDialog] = React.useState(false);
   const [isCollapsibleOpen, setIsCollapsibleOpen] = React.useState(false);
+  const [isColorPaletteOpen, setIsColorPaletteOpen] = React.useState(false);
+  const [isIconLibraryOpen, setIsIconLibraryOpen] = React.useState(false);
   const [isSwitchChecked, setIsSwitchChecked] = React.useState(false);
   const [toastOpen, setToastOpen] = React.useState(false);
+  const [copyToastOpen, setCopyToastOpen] = React.useState(false);
   const [radioValue, setRadioValue] = React.useState("option1");
   const [toggleValue, setToggleValue] = React.useState("left");
   const [selectValue, setSelectValue] = React.useState<string>("");
@@ -109,25 +112,25 @@ export default function Dashboard() {
     const filtered = sampleItems.filter(item =>
       item.toLowerCase().includes(lowerValue)
     );
-    
+
     // 정확히 일치하는 항목을 우선 표시
-    const exactMatch = sampleItems.find(item => 
+    const exactMatch = sampleItems.find(item =>
       item.toLowerCase() === lowerValue
     );
-    
+
     if (exactMatch) {
       return [exactMatch, ...filtered.filter(item => item !== exactMatch)];
     }
-    
+
     // 입력한 값이 목록에 없으면 입력한 값 자체를 추가
-    const hasExactMatch = filtered.some(item => 
+    const hasExactMatch = filtered.some(item =>
       item.toLowerCase() === lowerValue
     );
-    
+
     if (!hasExactMatch && autocompleteValue.trim()) {
       return [autocompleteValue, ...filtered];
     }
-    
+
     return filtered;
   }, [autocompleteValue]);
 
@@ -141,25 +144,25 @@ export default function Dashboard() {
     const filtered = sampleItems.filter(item =>
       item.toLowerCase().includes(lowerValue) && !selectedMultiAutocompleteItems.includes(item)
     );
-    
+
     // 정확히 일치하는 항목을 우선 표시
-    const exactMatch = sampleItems.find(item => 
+    const exactMatch = sampleItems.find(item =>
       item.toLowerCase() === lowerValue && !selectedMultiAutocompleteItems.includes(item)
     );
-    
+
     if (exactMatch) {
       return [exactMatch, ...filtered.filter(item => item !== exactMatch)];
     }
-    
+
     // 입력한 값이 목록에 없으면 입력한 값 자체를 추가
-    const hasExactMatch = filtered.some(item => 
+    const hasExactMatch = filtered.some(item =>
       item.toLowerCase() === lowerValue
     );
-    
+
     if (!hasExactMatch && multiAutocompleteValue.trim()) {
       return [multiAutocompleteValue, ...filtered];
     }
-    
+
     return filtered;
   }, [multiAutocompleteValue, selectedMultiAutocompleteItems]);
 
@@ -433,532 +436,1211 @@ export default function Dashboard() {
         <main className="w-full px-6 py-8">
           <div className="w-full">
             {/* Color Palette */}
-            <Card title="Color Palette (Tailwind CSS 기반)">
-              <div className="space-y-12 columns-2 md:columns-2 gap-8">
-                {/* Grayscale Colors */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100">Grayscale Colors</h3>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">50</div>
-                      <div className="h-12 rounded-sm bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-50</div>
+            <Card title="">
+              <Collapsible.Root open={isColorPaletteOpen} onOpenChange={setIsColorPaletteOpen}>
+                <Collapsible.Trigger asChild>
+                  <button className="w-full flex items-center justify-between h-[32px] text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                    <span className="text-lg font-semibold">Color Palette (Tailwind CSS 기반)</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{isColorPaletteOpen ? "접기" : "펼치기"}</span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${isColorPaletteOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">100</div>
-                      <div className="h-12 rounded-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-100</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">200</div>
-                      <div className="h-12 rounded-sm bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-200</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">300</div>
-                      <div className="h-12 rounded-sm bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-300</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">400</div>
-                      <div className="h-12 rounded-sm bg-gray-400 dark:bg-gray-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-400</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">500</div>
-                      <div className="h-12 rounded-sm bg-gray-500 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-500</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">600</div>
-                      <div className="h-12 rounded-sm bg-gray-600 dark:bg-gray-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-600</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">700</div>
-                      <div className="h-12 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-700</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">800</div>
-                      <div className="h-12 rounded-sm bg-gray-800 dark:bg-gray-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-800</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">900</div>
-                      <div className="h-12 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-900</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-xs text-center text-gray-600 dark:text-gray-400">950</div>
-                      <div className="h-12 rounded-sm bg-gray-950 dark:bg-gray-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div>
-                      <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-950</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Slate */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Slate</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-100 dark:bg-slate-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-200 dark:bg-slate-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-300 dark:bg-slate-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-400 dark:bg-slate-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-500 dark:bg-slate-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-600 dark:bg-slate-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-700 dark:bg-slate-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-800 dark:bg-slate-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-900 dark:bg-slate-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-950 dark:bg-slate-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-950</div></div>
-                  </div>
-                </div>
-
-                {/* Gray */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Gray</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-400 dark:bg-gray-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-500 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-600 dark:bg-gray-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-800 dark:bg-gray-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-950 dark:bg-gray-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-950</div></div>
-                  </div>
-                </div>
-
-                {/* Zinc */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Zinc</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-50 dark:bg-zinc-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-100 dark:bg-zinc-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-200 dark:bg-zinc-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-300 dark:bg-zinc-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-400 dark:bg-zinc-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-500 dark:bg-zinc-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-600 dark:bg-zinc-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-700 dark:bg-zinc-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-800 dark:bg-zinc-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-900 dark:bg-zinc-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-950 dark:bg-zinc-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-950</div></div>
-                  </div>
-                </div>
-
-                {/* Neutral */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Neutral</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-50 dark:bg-neutral-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-100 dark:bg-neutral-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-200 dark:bg-neutral-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-300 dark:bg-neutral-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-400 dark:bg-neutral-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-500 dark:bg-neutral-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-600 dark:bg-neutral-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-700 dark:bg-neutral-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-800 dark:bg-neutral-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-900 dark:bg-neutral-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-950 dark:bg-neutral-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-950</div></div>
-                  </div>
-                </div>
-
-                {/* Stone */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Stone</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-50 dark:bg-stone-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-100 dark:bg-stone-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-200 dark:bg-stone-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-300 dark:bg-stone-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-400 dark:bg-stone-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-500 dark:bg-stone-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-600 dark:bg-stone-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-700 dark:bg-stone-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-800 dark:bg-stone-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-900 dark:bg-stone-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-950 dark:bg-stone-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-950</div></div>
-                  </div>
-                </div>
-
-                {/* Red */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Red</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-50 dark:bg-red-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-100 dark:bg-red-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-200 dark:bg-red-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-300 dark:bg-red-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-400 dark:bg-red-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-500 dark:bg-red-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-600 dark:bg-red-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-700 dark:bg-red-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-800 dark:bg-red-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-900 dark:bg-red-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-red-950 dark:bg-red-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-950</div></div>
-                  </div>
-                </div>
-
-                {/* Orange */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Orange</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-50 dark:bg-orange-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-100 dark:bg-orange-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-200 dark:bg-orange-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-300 dark:bg-orange-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-400 dark:bg-orange-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-500 dark:bg-orange-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-600 dark:bg-orange-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-700 dark:bg-orange-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-800 dark:bg-orange-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-900 dark:bg-orange-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-950 dark:bg-orange-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-950</div></div>
-                  </div>
-                </div>
-
-                {/* Amber */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Amber</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-50 dark:bg-amber-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-100 dark:bg-amber-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-200 dark:bg-amber-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-300 dark:bg-amber-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-400 dark:bg-amber-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-500 dark:bg-amber-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-600 dark:bg-amber-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-700 dark:bg-amber-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-800 dark:bg-amber-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-900 dark:bg-amber-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-950 dark:bg-amber-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-950</div></div>
-                  </div>
-                </div>
-
-                {/* Yellow */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Yellow</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-50 dark:bg-yellow-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-100 dark:bg-yellow-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-200 dark:bg-yellow-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-300 dark:bg-yellow-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-400 dark:bg-yellow-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-500 dark:bg-yellow-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-600 dark:bg-yellow-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-700 dark:bg-yellow-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-800 dark:bg-yellow-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-900 dark:bg-yellow-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-950 dark:bg-yellow-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-950</div></div>
-                  </div>
-                </div>
-
-                {/* Lime */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Lime</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-50 dark:bg-lime-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-100 dark:bg-lime-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-200 dark:bg-lime-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-300 dark:bg-lime-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-400 dark:bg-lime-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-500 dark:bg-lime-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-600 dark:bg-lime-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-700 dark:bg-lime-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-800 dark:bg-lime-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-900 dark:bg-lime-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-950 dark:bg-lime-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-950</div></div>
-                  </div>
-                </div>
-
-                {/* Green */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Green</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-50 dark:bg-green-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-100 dark:bg-green-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-200 dark:bg-green-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-300 dark:bg-green-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-400 dark:bg-green-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-500 dark:bg-green-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-600 dark:bg-green-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-700 dark:bg-green-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-800 dark:bg-green-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-900 dark:bg-green-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-green-950 dark:bg-green-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-950</div></div>
-                  </div>
-                </div>
-
-                {/* Emerald */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Emerald</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-50 dark:bg-emerald-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-100 dark:bg-emerald-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-200 dark:bg-emerald-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-300 dark:bg-emerald-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-400 dark:bg-emerald-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-500 dark:bg-emerald-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-600 dark:bg-emerald-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-700 dark:bg-emerald-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-800 dark:bg-emerald-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-900 dark:bg-emerald-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-950 dark:bg-emerald-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-950</div></div>
-                  </div>
-                </div>
-
-                {/* Teal */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Teal</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-50 dark:bg-teal-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-100 dark:bg-teal-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-200 dark:bg-teal-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-300 dark:bg-teal-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-400 dark:bg-teal-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-500 dark:bg-teal-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-600 dark:bg-teal-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-700 dark:bg-teal-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-800 dark:bg-teal-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-900 dark:bg-teal-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-950 dark:bg-teal-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-950</div></div>
-                  </div>
-                </div>
-
-                {/* Cyan */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Cyan</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-50 dark:bg-cyan-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-100 dark:bg-cyan-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-200 dark:bg-cyan-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-300 dark:bg-cyan-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-400 dark:bg-cyan-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-500 dark:bg-cyan-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-600 dark:bg-cyan-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-700 dark:bg-cyan-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-800 dark:bg-cyan-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-900 dark:bg-cyan-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-950 dark:bg-cyan-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-950</div></div>
-                  </div>
-                </div>
-
-                {/* Sky */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Sky</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-50 dark:bg-sky-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-100 dark:bg-sky-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-200 dark:bg-sky-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-300 dark:bg-sky-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-400 dark:bg-sky-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-500 dark:bg-sky-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-600 dark:bg-sky-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-700 dark:bg-sky-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-800 dark:bg-sky-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-900 dark:bg-sky-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-950 dark:bg-sky-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-950</div></div>
-                  </div>
-                </div>
-
-                {/* Blue */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Blue</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-50 dark:bg-blue-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-100 dark:bg-blue-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-200 dark:bg-blue-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-300 dark:bg-blue-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-400 dark:bg-blue-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-500 dark:bg-blue-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-600 dark:bg-blue-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-700 dark:bg-blue-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-800 dark:bg-blue-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-900 dark:bg-blue-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-950 dark:bg-blue-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-950</div></div>
-                  </div>
-                </div>
-
-                {/* Indigo */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Indigo</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-50 dark:bg-indigo-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-100 dark:bg-indigo-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-200 dark:bg-indigo-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-300 dark:bg-indigo-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-400 dark:bg-indigo-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-500 dark:bg-indigo-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-600 dark:bg-indigo-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-700 dark:bg-indigo-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-800 dark:bg-indigo-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-900 dark:bg-indigo-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-950 dark:bg-indigo-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-950</div></div>
-                  </div>
-                </div>
-
-                {/* Violet */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Violet</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-50 dark:bg-violet-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-100 dark:bg-violet-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-200 dark:bg-violet-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-300 dark:bg-violet-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-400 dark:bg-violet-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-500 dark:bg-violet-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-600 dark:bg-violet-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-700 dark:bg-violet-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-800 dark:bg-violet-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-900 dark:bg-violet-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-950 dark:bg-violet-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-950</div></div>
-                  </div>
-                </div>
-
-                {/* Purple */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Purple</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-50 dark:bg-purple-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-100 dark:bg-purple-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-200 dark:bg-purple-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-300 dark:bg-purple-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-400 dark:bg-purple-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-500 dark:bg-purple-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-600 dark:bg-purple-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-700 dark:bg-purple-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-800 dark:bg-purple-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-900 dark:bg-purple-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-950 dark:bg-purple-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-950</div></div>
-                  </div>
-                </div>
-
-                {/* Fuchsia */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Fuchsia</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-50 dark:bg-fuchsia-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-100 dark:bg-fuchsia-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-200 dark:bg-fuchsia-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-300 dark:bg-fuchsia-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-400 dark:bg-fuchsia-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-500 dark:bg-fuchsia-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-600 dark:bg-fuchsia-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-700 dark:bg-fuchsia-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-800 dark:bg-fuchsia-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-900 dark:bg-fuchsia-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-950 dark:bg-fuchsia-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-950</div></div>
-                  </div>
-                </div>
-
-                {/* Pink */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Pink</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-50 dark:bg-pink-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-100 dark:bg-pink-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-200 dark:bg-pink-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-300 dark:bg-pink-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-400 dark:bg-pink-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-500 dark:bg-pink-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-600 dark:bg-pink-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-700 dark:bg-pink-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-800 dark:bg-pink-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-900 dark:bg-pink-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-950 dark:bg-pink-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-950</div></div>
-                  </div>
-                </div>
-
-                {/* Rose */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Rose</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-50 dark:bg-rose-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-50</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-100 dark:bg-rose-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-100</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-200 dark:bg-rose-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-200</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-300 dark:bg-rose-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-300</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-400 dark:bg-rose-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-400</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-500 dark:bg-rose-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-500</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-600 dark:bg-rose-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-600</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-700 dark:bg-rose-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-700</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-800 dark:bg-rose-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-800</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-900 dark:bg-rose-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-900</div></div>
-                    <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-950 dark:bg-rose-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-950</div></div>
-                  </div>
-                </div>
-
-                {/* Usage Examples */}
-                <div className="break-inside-avoid mb-6">
-                  <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100">사용 예시</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Background</div>
-                      <div className="space-y-1">
-                        <div className="h-10 rounded-sm bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">bg-white</span>
+                  </button>
+                </Collapsible.Trigger>
+                <Collapsible.Content className="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden">
+                  <div className="pt-4 space-y-12 columns-2 md:columns-2 gap-8">
+                    {/* Grayscale Colors */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100">Grayscale Colors</h3>
+                      <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">50</div>
+                          <div className="h-12 rounded-sm bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-50</div>
                         </div>
-                        <div className="h-10 rounded-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">bg-gray-50</span>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">100</div>
+                          <div className="h-12 rounded-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-100</div>
                         </div>
-                        <div className="h-10 rounded-sm bg-blue-50 dark:bg-blue-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">bg-blue-50</span>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">200</div>
+                          <div className="h-12 rounded-sm bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-200</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">300</div>
+                          <div className="h-12 rounded-sm bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-300</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">400</div>
+                          <div className="h-12 rounded-sm bg-gray-400 dark:bg-gray-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-400</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">500</div>
+                          <div className="h-12 rounded-sm bg-gray-500 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-500</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">600</div>
+                          <div className="h-12 rounded-sm bg-gray-600 dark:bg-gray-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-600</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">700</div>
+                          <div className="h-12 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-700</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">800</div>
+                          <div className="h-12 rounded-sm bg-gray-800 dark:bg-gray-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-800</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">900</div>
+                          <div className="h-12 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-900</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="text-xs text-center text-gray-600 dark:text-gray-400">950</div>
+                          <div className="h-12 rounded-sm bg-gray-950 dark:bg-gray-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div>
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-950</div>
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Text</div>
-                      <div className="space-y-1">
-                        <div className="h-10 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white dark:text-gray-900">text-gray-900</span>
-                        </div>
-                        <div className="h-10 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white dark:text-gray-900">text-gray-700</span>
-                        </div>
-                        <div className="h-10 rounded-sm bg-blue-600 dark:bg-blue-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white dark:text-gray-900">text-blue-600</span>
-                        </div>
+
+                    {/* Slate */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Slate</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-50 dark:bg-slate-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-100 dark:bg-slate-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-200 dark:bg-slate-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-300 dark:bg-slate-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-400 dark:bg-slate-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-500 dark:bg-slate-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-600 dark:bg-slate-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-700 dark:bg-slate-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-800 dark:bg-slate-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-900 dark:bg-slate-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-slate-950 dark:bg-slate-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">slate-950</div></div>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Border</div>
-                      <div className="space-y-1">
-                        <div className="h-10 rounded-sm border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">border-gray-200</span>
-                        </div>
-                        <div className="h-10 rounded-sm border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-gray-900 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">border-blue-500</span>
-                        </div>
-                        <div className="h-10 rounded-sm border-2 border-red-500 dark:border-red-400 bg-white dark:bg-gray-900 flex items-center justify-center">
-                          <span className="text-xs text-gray-700 dark:text-gray-300">border-red-500</span>
-                        </div>
+
+                    {/* Gray */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Gray</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-400 dark:bg-gray-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-500 dark:bg-gray-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-600 dark:bg-gray-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-800 dark:bg-gray-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-gray-950 dark:bg-gray-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">gray-950</div></div>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Status Colors</div>
-                      <div className="space-y-1">
-                        <div className="h-10 rounded-sm bg-blue-500 dark:bg-blue-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white">Info (blue)</span>
+
+                    {/* Zinc */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Zinc</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-50 dark:bg-zinc-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-100 dark:bg-zinc-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-200 dark:bg-zinc-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-300 dark:bg-zinc-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-400 dark:bg-zinc-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-500 dark:bg-zinc-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-600 dark:bg-zinc-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-700 dark:bg-zinc-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-800 dark:bg-zinc-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-900 dark:bg-zinc-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-zinc-950 dark:bg-zinc-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">zinc-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Neutral */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Neutral</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-50 dark:bg-neutral-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-100 dark:bg-neutral-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-200 dark:bg-neutral-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-300 dark:bg-neutral-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-400 dark:bg-neutral-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-500 dark:bg-neutral-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-600 dark:bg-neutral-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-700 dark:bg-neutral-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-800 dark:bg-neutral-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-900 dark:bg-neutral-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-neutral-950 dark:bg-neutral-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">neutral-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Stone */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Stone</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-50 dark:bg-stone-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-100 dark:bg-stone-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-200 dark:bg-stone-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-300 dark:bg-stone-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-400 dark:bg-stone-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-500 dark:bg-stone-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-600 dark:bg-stone-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-700 dark:bg-stone-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-800 dark:bg-stone-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-900 dark:bg-stone-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-stone-950 dark:bg-stone-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">stone-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Red */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Red</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-50 dark:bg-red-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-100 dark:bg-red-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-200 dark:bg-red-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-300 dark:bg-red-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-400 dark:bg-red-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-500 dark:bg-red-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-600 dark:bg-red-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-700 dark:bg-red-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-800 dark:bg-red-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-900 dark:bg-red-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-red-950 dark:bg-red-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">red-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Orange */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Orange</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-50 dark:bg-orange-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-100 dark:bg-orange-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-200 dark:bg-orange-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-300 dark:bg-orange-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-400 dark:bg-orange-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-500 dark:bg-orange-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-600 dark:bg-orange-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-700 dark:bg-orange-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-800 dark:bg-orange-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-900 dark:bg-orange-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-orange-950 dark:bg-orange-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">orange-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Amber */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Amber</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-50 dark:bg-amber-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-100 dark:bg-amber-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-200 dark:bg-amber-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-300 dark:bg-amber-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-400 dark:bg-amber-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-500 dark:bg-amber-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-600 dark:bg-amber-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-700 dark:bg-amber-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-800 dark:bg-amber-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-900 dark:bg-amber-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-amber-950 dark:bg-amber-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">amber-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Yellow */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Yellow</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-50 dark:bg-yellow-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-100 dark:bg-yellow-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-200 dark:bg-yellow-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-300 dark:bg-yellow-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-400 dark:bg-yellow-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-500 dark:bg-yellow-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-600 dark:bg-yellow-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-700 dark:bg-yellow-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-800 dark:bg-yellow-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-900 dark:bg-yellow-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-yellow-950 dark:bg-yellow-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">yellow-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Lime */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Lime</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-50 dark:bg-lime-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-100 dark:bg-lime-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-200 dark:bg-lime-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-300 dark:bg-lime-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-400 dark:bg-lime-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-500 dark:bg-lime-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-600 dark:bg-lime-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-700 dark:bg-lime-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-800 dark:bg-lime-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-900 dark:bg-lime-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-lime-950 dark:bg-lime-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">lime-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Green */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Green</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-50 dark:bg-green-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-100 dark:bg-green-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-200 dark:bg-green-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-300 dark:bg-green-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-400 dark:bg-green-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-500 dark:bg-green-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-600 dark:bg-green-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-700 dark:bg-green-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-800 dark:bg-green-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-900 dark:bg-green-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-green-950 dark:bg-green-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">green-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Emerald */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Emerald</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-50 dark:bg-emerald-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-100 dark:bg-emerald-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-200 dark:bg-emerald-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-300 dark:bg-emerald-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-400 dark:bg-emerald-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-500 dark:bg-emerald-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-600 dark:bg-emerald-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-700 dark:bg-emerald-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-800 dark:bg-emerald-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-900 dark:bg-emerald-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-emerald-950 dark:bg-emerald-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">emerald-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Teal */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Teal</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-50 dark:bg-teal-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-100 dark:bg-teal-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-200 dark:bg-teal-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-300 dark:bg-teal-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-400 dark:bg-teal-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-500 dark:bg-teal-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-600 dark:bg-teal-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-700 dark:bg-teal-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-800 dark:bg-teal-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-900 dark:bg-teal-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-teal-950 dark:bg-teal-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">teal-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Cyan */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Cyan</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-50 dark:bg-cyan-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-100 dark:bg-cyan-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-200 dark:bg-cyan-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-300 dark:bg-cyan-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-400 dark:bg-cyan-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-500 dark:bg-cyan-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-600 dark:bg-cyan-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-700 dark:bg-cyan-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-800 dark:bg-cyan-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-900 dark:bg-cyan-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-cyan-950 dark:bg-cyan-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">cyan-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Sky */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Sky</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-50 dark:bg-sky-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-100 dark:bg-sky-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-200 dark:bg-sky-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-300 dark:bg-sky-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-400 dark:bg-sky-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-500 dark:bg-sky-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-600 dark:bg-sky-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-700 dark:bg-sky-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-800 dark:bg-sky-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-900 dark:bg-sky-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-sky-950 dark:bg-sky-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">sky-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Blue */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Blue</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-50 dark:bg-blue-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-100 dark:bg-blue-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-200 dark:bg-blue-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-300 dark:bg-blue-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-400 dark:bg-blue-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-500 dark:bg-blue-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-600 dark:bg-blue-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-700 dark:bg-blue-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-800 dark:bg-blue-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-900 dark:bg-blue-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-blue-950 dark:bg-blue-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">blue-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Indigo */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Indigo</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-50 dark:bg-indigo-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-100 dark:bg-indigo-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-200 dark:bg-indigo-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-300 dark:bg-indigo-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-400 dark:bg-indigo-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-500 dark:bg-indigo-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-600 dark:bg-indigo-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-700 dark:bg-indigo-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-800 dark:bg-indigo-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-900 dark:bg-indigo-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-indigo-950 dark:bg-indigo-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">indigo-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Violet */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Violet</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-50 dark:bg-violet-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-100 dark:bg-violet-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-200 dark:bg-violet-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-300 dark:bg-violet-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-400 dark:bg-violet-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-500 dark:bg-violet-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-600 dark:bg-violet-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-700 dark:bg-violet-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-800 dark:bg-violet-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-900 dark:bg-violet-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-violet-950 dark:bg-violet-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">violet-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Purple */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Purple</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-50 dark:bg-purple-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-100 dark:bg-purple-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-200 dark:bg-purple-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-300 dark:bg-purple-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-400 dark:bg-purple-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-500 dark:bg-purple-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-600 dark:bg-purple-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-700 dark:bg-purple-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-800 dark:bg-purple-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-900 dark:bg-purple-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-purple-950 dark:bg-purple-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">purple-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Fuchsia */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Fuchsia</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-50 dark:bg-fuchsia-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-100 dark:bg-fuchsia-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-200 dark:bg-fuchsia-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-300 dark:bg-fuchsia-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-400 dark:bg-fuchsia-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-500 dark:bg-fuchsia-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-600 dark:bg-fuchsia-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-700 dark:bg-fuchsia-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-800 dark:bg-fuchsia-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-900 dark:bg-fuchsia-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-fuchsia-950 dark:bg-fuchsia-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">fuchsia-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Pink */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Pink</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-50 dark:bg-pink-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-100 dark:bg-pink-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-200 dark:bg-pink-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-300 dark:bg-pink-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-400 dark:bg-pink-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-500 dark:bg-pink-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-600 dark:bg-pink-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-700 dark:bg-pink-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-800 dark:bg-pink-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-900 dark:bg-pink-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-pink-950 dark:bg-pink-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">pink-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Rose */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-3 text-gray-900 dark:text-gray-100">Rose</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-11 gap-2">
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-50 dark:bg-rose-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">50</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-50</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-100 dark:bg-rose-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">100</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-100</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-200 dark:bg-rose-800 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">200</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-200</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-300 dark:bg-rose-700 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-gray-900 dark:text-gray-100">300</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-300</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-400 dark:bg-rose-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">400</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-400</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-500 dark:bg-rose-500 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">500</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-500</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-600 dark:bg-rose-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">600</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-600</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-700 dark:bg-rose-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white">700</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-700</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-800 dark:bg-rose-200 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">800</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-800</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-900 dark:bg-rose-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">900</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-900</div></div>
+                        <div className="space-y-1"><div className="h-12 rounded-sm bg-rose-950 dark:bg-rose-50 border border-gray-200 dark:border-gray-800 flex items-center justify-center"><span className="text-xs text-white dark:text-gray-900">950</span></div><div className="text-xs text-center text-gray-500 dark:text-gray-500 font-mono">rose-950</div></div>
+                      </div>
+                    </div>
+
+                    {/* Usage Examples */}
+                    <div className="break-inside-avoid mb-6">
+                      <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100">사용 예시</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Background</div>
+                          <div className="space-y-1">
+                            <div className="h-10 rounded-sm bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">bg-white</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">bg-gray-50</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-blue-50 dark:bg-blue-950 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">bg-blue-50</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="h-10 rounded-sm bg-green-500 dark:bg-green-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white">Success (green)</span>
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Text</div>
+                          <div className="space-y-1">
+                            <div className="h-10 rounded-sm bg-gray-900 dark:bg-gray-100 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white dark:text-gray-900">text-gray-900</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-gray-700 dark:bg-gray-300 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white dark:text-gray-900">text-gray-700</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-blue-600 dark:bg-blue-400 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white dark:text-gray-900">text-blue-600</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="h-10 rounded-sm bg-yellow-500 dark:bg-yellow-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white">Warning (yellow)</span>
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Border</div>
+                          <div className="space-y-1">
+                            <div className="h-10 rounded-sm border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">border-gray-200</span>
+                            </div>
+                            <div className="h-10 rounded-sm border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-gray-900 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">border-blue-500</span>
+                            </div>
+                            <div className="h-10 rounded-sm border-2 border-red-500 dark:border-red-400 bg-white dark:bg-gray-900 flex items-center justify-center">
+                              <span className="text-xs text-gray-700 dark:text-gray-300">border-red-500</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="h-10 rounded-sm bg-red-500 dark:bg-red-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
-                          <span className="text-xs text-white">Error (red)</span>
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Status Colors</div>
+                          <div className="space-y-1">
+                            <div className="h-10 rounded-sm bg-blue-500 dark:bg-blue-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white">Info (blue)</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-green-500 dark:bg-green-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white">Success (green)</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-yellow-500 dark:bg-yellow-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white">Warning (yellow)</span>
+                            </div>
+                            <div className="h-10 rounded-sm bg-red-500 dark:bg-red-600 border border-gray-200 dark:border-gray-800 flex items-center justify-center">
+                              <span className="text-xs text-white">Error (red)</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </Collapsible.Content>
+              </Collapsible.Root>
+            </Card>
+            {/* Icon Library */}
+            <Card title="">
+              <Collapsible.Root open={isIconLibraryOpen} onOpenChange={setIsIconLibraryOpen}>
+                <Collapsible.Trigger asChild>
+                  <button className="w-full flex items-center justify-between h-[32px] text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                    <span className="text-lg font-semibold">Icon Library</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{isIconLibraryOpen ? "접기" : "펼치기"}</span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${isIconLibraryOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+                </Collapsible.Trigger>
+                <Collapsible.Content className="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden">
+                  <div className="pt-4 space-y-6">
+                    {/* 아이콘 데이터 */}
+                    {(() => {
+                      const icons = [
+                        {
+                          name: "추가",
+                          label: "Plus",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />',
+                          buttonCode: `<button aria-label="추가" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "삭제",
+                          label: "X / Close",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />',
+                          buttonCode: `<button aria-label="삭제" className="h-[32px] w-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "보기",
+                          label: "Eye",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />',
+                          buttonCode: `<button aria-label="보기" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="password" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "검색",
+                          label: "Search",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />',
+                          buttonCode: `<button aria-label="검색" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" placeholder="검색..." className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "수정",
+                          label: "Edit / Pencil",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />',
+                          buttonCode: `<button aria-label="수정" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "다운로드",
+                          label: "Download",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />',
+                          buttonCode: `<button aria-label="다운로드" className="h-[32px] w-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "업로드",
+                          label: "Upload",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />',
+                          buttonCode: `<button aria-label="업로드" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="file" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "복사",
+                          label: "Copy",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />',
+                          buttonCode: `<button aria-label="복사" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "확인",
+                          label: "Check",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />',
+                          buttonCode: `<button aria-label="확인" className="h-[32px] w-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-green-500 hover:text-green-600 dark:hover:text-green-400 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "정보",
+                          label: "Info",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+                          buttonCode: `<button aria-label="정보" className="h-[32px] w-[32px] rounded-sm bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "별표",
+                          label: "Star",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />',
+                          buttonCode: `<button aria-label="별표" className="h-[32px] w-[32px] rounded-sm bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800 text-yellow-600 dark:text-yellow-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "하트",
+                          label: "Heart",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />',
+                          buttonCode: `<button aria-label="하트" className="h-[32px] w-[32px] rounded-sm bg-pink-100 dark:bg-pink-900 hover:bg-pink-200 dark:hover:bg-pink-800 text-pink-600 dark:text-pink-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "필터",
+                          label: "Filter",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />',
+                          buttonCode: `<button aria-label="필터" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "정렬",
+                          label: "Sort",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />',
+                          buttonCode: `<button aria-label="정렬" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "메뉴",
+                          label: "Menu / Hamburger",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />',
+                          buttonCode: `<button aria-label="메뉴" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "설정",
+                          label: "Settings / Gear",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />',
+                          buttonCode: `<button aria-label="설정" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "알림",
+                          label: "Bell / Notification",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />',
+                          buttonCode: `<button aria-label="알림" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center relative">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+  </svg>
+  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    </svg>
+    <span className="absolute top-0 right-0 h-1.5 w-1.5 bg-red-500 rounded-full"></span>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "홈",
+                          label: "Home",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />',
+                          buttonCode: `<button aria-label="홈" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "사용자",
+                          label: "User / Person",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />',
+                          buttonCode: `<button aria-label="사용자" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "메일",
+                          label: "Mail / Email",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />',
+                          buttonCode: `<button aria-label="메일" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="email" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "일정",
+                          label: "Calendar",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
+                          buttonCode: `<button aria-label="일정" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "저장",
+                          label: "Save / Disk",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />',
+                          buttonCode: `<button aria-label="저장" className="h-[32px] w-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "공유",
+                          label: "Share",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />',
+                          buttonCode: `<button aria-label="공유" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "더보기",
+                          label: "More / Dots",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />',
+                          buttonCode: `<button aria-label="더보기" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "인쇄",
+                          label: "Print",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />',
+                          buttonCode: `<button aria-label="인쇄" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "위로",
+                          label: "Arrow Up",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />',
+                          buttonCode: `<button aria-label="위로" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "아래로",
+                          label: "Arrow Down",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />',
+                          buttonCode: `<button aria-label="아래로" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "왼쪽",
+                          label: "Arrow Left",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />',
+                          buttonCode: `<button aria-label="왼쪽" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "오른쪽",
+                          label: "Arrow Right",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />',
+                          buttonCode: `<button aria-label="오른쪽" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "새로고침",
+                          label: "Refresh / Reload",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />',
+                          buttonCode: `<button aria-label="새로고침" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <button className="absolute right-2 top-1/2 -translate-y-1/2 h-[24px] w-[24px] rounded-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center">
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    </svg>
+  </button>
+</div>`
+                        },
+                        {
+                          name: "잠금",
+                          label: "Lock",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />',
+                          buttonCode: `<button aria-label="잠금" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="password" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "잠금해제",
+                          label: "Unlock",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />',
+                          buttonCode: `<button aria-label="잠금해제" className="h-[32px] w-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "위치",
+                          label: "Location / Map Pin",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />',
+                          buttonCode: `<button aria-label="위치" className="h-[32px] w-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+</div>`
+                        },
+                        {
+                          name: "시간",
+                          label: "Clock",
+                          svg: '<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />',
+                          buttonCode: `<button aria-label="시간" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+</button>`,
+                          inputCode: `<div className="relative">
+  <input type="text" className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+</div>`
+                        }
+                      ];
+
+                      const handleCopyCode = async (code: string, type: string) => {
+                        try {
+                          await navigator.clipboard.writeText(code);
+                          setCopyToastOpen(true);
+                        } catch (err) {
+                          console.error("복사 실패:", err);
+                        }
+                      };
+
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
+                          {icons.map((icon, index) => (
+                            <div key={index} className="space-y-2 group">
+                              <div className="flex flex-col items-center gap-2 p-3 border border-gray-200 dark:border-gray-800 rounded-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+                                <div className="h-[48px] w-[48px] rounded-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" dangerouslySetInnerHTML={{ __html: icon.svg }} />
+                                </div>
+                                <div className="text-center w-full">
+                                  <div className="text-xs font-medium text-gray-900 dark:text-gray-100">{icon.name}</div>
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">{icon.label}</div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+
+                    {/* 복사 완료 Toast */}
+                    <Toast.Root
+                      open={copyToastOpen}
+                      onOpenChange={setCopyToastOpen}
+                      className="flex w-full flex-col gap-2 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-lg relative"
+                    >
+                      <Toast.Title className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        코드가 복사되었습니다
+                      </Toast.Title>
+                    </Toast.Root>
+                  </div>
+                </Collapsible.Content>
+              </Collapsible.Root>
             </Card>
           </div>
 
@@ -1282,28 +1964,238 @@ export default function Dashboard() {
 
             {/* Label */}
             <Card title="Label">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-6">
+                {/* 상하 배치 예시 */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">상하 배치</h3>
+                  <div className="flex flex-col gap-2">
+                    <Label.Root htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      이메일 주소
+                    </Label.Root>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="email@example.com"
+                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label.Root htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      비밀번호
+                    </Label.Root>
+                    <input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* 좌우 배치 예시 */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">좌우 배치</h3>
+                  <div className="flex items-center gap-4">
+                    <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                      이메일 주소
+                    </Label.Root>
+                    <input
+                      id="email-horizontal"
+                      type="email"
+                      placeholder="email@example.com"
+                      className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Label.Root htmlFor="password-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                      비밀번호
+                    </Label.Root>
+                    <input
+                      id="password-horizontal"
+                      type="password"
+                      placeholder="••••••••"
+                      className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                      이름
+                    </Label.Root>
+                    <input
+                      id="name-horizontal"
+                      type="text"
+                      placeholder="홍길동"
+                      className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* 필수 항목 예시 */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">필수 항목 표시</h3>
+                  <div className="flex flex-col gap-2">
+                    <Label.Root htmlFor="email-required" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      이메일 주소 <span className="text-red-500">*</span>
+                    </Label.Root>
+                    <input
+                      id="email-required"
+                      type="email"
+                      placeholder="email@example.com"
+                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label.Root htmlFor="password-required" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      비밀번호 <span className="text-red-500">*</span>
+                    </Label.Root>
+                    <input
+                      id="password-required"
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                      전화번호 <span className="text-red-500">*</span>
+                    </Label.Root>
+                    <input
+                      id="phone-required-horizontal"
+                      type="tel"
+                      placeholder="010-1234-5678"
+                      className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Validation */}
+            <Card title="Validation">
+              <div className="space-y-6">
+                {/* 이메일 검증 에러 */}
                 <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    이메일 주소
+                  <Label.Root htmlFor="email-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    이메일 주소 <span className="text-red-500">*</span>
                   </Label.Root>
                   <input
-                    id="email"
+                    id="email-validation"
                     type="email"
                     placeholder="email@example.com"
-                    className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="invalid-email"
                   />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    올바른 이메일 형식이 아닙니다
+                  </p>
                 </div>
+
+                {/* 비밀번호 검증 에러 */}
                 <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    비밀번호
+                  <Label.Root htmlFor="password-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    비밀번호 <span className="text-red-500">*</span>
                   </Label.Root>
                   <input
-                    id="password"
+                    id="password-validation"
                     type="password"
                     placeholder="••••••••"
-                    className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="123"
                   />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    비밀번호는 최소 8자 이상이어야 합니다
+                  </p>
+                </div>
+
+                {/* 전화번호 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="phone-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    전화번호 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="phone-validation"
+                    type="tel"
+                    placeholder="010-1234-5678"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="123"
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)
+                  </p>
+                </div>
+
+                {/* 이름 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="name-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    이름 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="name-validation"
+                    type="text"
+                    placeholder="홍길동"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue=""
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    이름을 입력해주세요
+                  </p>
+                </div>
+
+                {/* 성공 상태 예시 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="success-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    사용자명
+                  </Label.Root>
+                  <input
+                    id="success-validation"
+                    type="text"
+                    placeholder="사용자명"
+                    className="h-[32px] rounded-sm border border-green-500 dark:border-green-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="validuser"
+                  />
+                  <p className="text-xs text-green-500 dark:text-green-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    사용 가능한 사용자명입니다
+                  </p>
+                </div>
+
+                {/* 좌우 배치 - 에러 메시지 */}
+                <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">좌우 배치 (에러)</h3>
+                  <div className="flex items-start gap-4">
+                    <Label.Root htmlFor="email-horizontal-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300 w-24 shrink-0 pt-2">
+                      이메일 <span className="text-red-500">*</span>
+                    </Label.Root>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <input
+                        id="email-horizontal-validation"
+                        type="email"
+                        placeholder="email@example.com"
+                        className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        defaultValue="wrong-email"
+                      />
+                      <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        올바른 이메일 형식이 아닙니다
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -1437,20 +2329,34 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label.Root htmlFor="textfield-right-align" className="text-xs text-gray-500 dark:text-gray-400">
-                    아이콘 앞, 우측 정렬
+                    아이콘 앞, 우측 정렬, 삭제
                   </Label.Root>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <span className="font-mono text-base">₩</span>
                     </div>
+                    {/* 입력시 삭제기능 추가 */}
                     <input
                       id="textfield-right-align"
                       type="text"
                       placeholder="0"
-                      className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-4 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                      value={searchTextRight}
+                      onChange={(e) => setSearchTextRight(e.target.value)}
+                      // pl-10(왼), pr-4 → pr-10(오른쪽 삭제버튼과 겹치지 않도록)
+                      className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-10 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
+                    {searchTextRight && (
+                      <button
+                        onClick={() => setSearchTextRight("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
+                        aria-label="입력값 삭제"
+                        type="button"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -1465,7 +2371,7 @@ export default function Dashboard() {
                       className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">ㅁ
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
@@ -1481,8 +2387,8 @@ export default function Dashboard() {
                   <Label.Root htmlFor="autocomplete" className="text-xs text-gray-500 dark:text-gray-400">
                     기본 Autocomplete
                   </Label.Root>
-                  <Popover.Root 
-                    open={autocompleteOpen} 
+                  <Popover.Root
+                    open={autocompleteOpen}
                     onOpenChange={setAutocompleteOpen}
                   >
                     <Popover.Anchor asChild>
@@ -1537,7 +2443,7 @@ export default function Dashboard() {
                           const target = e.target as HTMLElement;
                           const isInput = target.id === 'autocomplete' || target.closest('[id="autocomplete"]');
                           const isPopoverContent = target.closest('[data-radix-popover-content]');
-                          
+
                           if (!isInput && !isPopoverContent) {
                             setAutocompleteOpen(false);
                           } else {
@@ -1563,11 +2469,10 @@ export default function Dashboard() {
                                       setSelectedAutocompleteItem(item);
                                       setAutocompleteOpen(false);
                                     }}
-                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${
-                                      selectedAutocompleteItem === item
-                                        ? "bg-blue-500 dark:bg-blue-600 text-white"
-                                        : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    }`}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedAutocompleteItem === item
+                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      }`}
                                   >
                                     {isCustomItem && (
                                       <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
@@ -1602,8 +2507,8 @@ export default function Dashboard() {
                   <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
                     멀티 선택 Autocomplete (Chip 형태)
                   </Label.Root>
-                  <Popover.Root 
-                    open={multiAutocompleteOpen} 
+                  <Popover.Root
+                    open={multiAutocompleteOpen}
                     onOpenChange={setMultiAutocompleteOpen}
                   >
                     <Popover.Anchor asChild>
@@ -1620,7 +2525,7 @@ export default function Dashboard() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                setSelectedMultiAutocompleteItems(prev => 
+                                setSelectedMultiAutocompleteItems(prev =>
                                   prev.filter(selectedItem => selectedItem !== item)
                                 );
                                 setMultiAutocompleteOpen(true);
@@ -1661,7 +2566,7 @@ export default function Dashboard() {
                           const target = e.target as HTMLElement;
                           const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
                           const isPopoverContent = target.closest('[data-radix-popover-content]');
-                          
+
                           if (!isInput && !isPopoverContent) {
                             setMultiAutocompleteOpen(false);
                           } else {
@@ -1689,11 +2594,10 @@ export default function Dashboard() {
                                         setMultiAutocompleteOpen(true);
                                       }
                                     }}
-                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${
-                                      selectedMultiAutocompleteItems.includes(item)
-                                        ? "bg-blue-500 dark:bg-blue-600 text-white"
-                                        : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    }`}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedMultiAutocompleteItems.includes(item)
+                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      }`}
                                   >
                                     {isCustomItem && (
                                       <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
@@ -1739,8 +2643,8 @@ export default function Dashboard() {
                   <Label.Root htmlFor="datepicker" className="text-xs text-gray-500 dark:text-gray-400">
                     날짜 선택
                   </Label.Root>
-                  <Popover.Root 
-                    open={datePickerOpen} 
+                  <Popover.Root
+                    open={datePickerOpen}
                     onOpenChange={(open) => {
                       setDatePickerOpen(open);
                       if (open) {
@@ -1825,8 +2729,8 @@ export default function Dashboard() {
                   <Label.Root htmlFor="datetimepicker" className="text-xs text-gray-500 dark:text-gray-400">
                     날짜 및 시간 선택
                   </Label.Root>
-                  <Popover.Root 
-                    open={dateTimePickerOpen} 
+                  <Popover.Root
+                    open={dateTimePickerOpen}
                     onOpenChange={(open) => {
                       setDateTimePickerOpen(open);
                       if (open) {
@@ -1952,8 +2856,8 @@ export default function Dashboard() {
                   <Label.Root htmlFor="daterangepicker" className="text-xs text-gray-500 dark:text-gray-400">
                     날짜 범위 선택
                   </Label.Root>
-                  <Popover.Root 
-                    open={dateRangePickerOpen} 
+                  <Popover.Root
+                    open={dateRangePickerOpen}
                     onOpenChange={(open) => {
                       setDateRangePickerOpen(open);
                       if (open) {
@@ -2478,33 +3382,370 @@ export default function Dashboard() {
 
             {/* Tooltip */}
             <Card title="Tooltip">
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { side: "top" as const, label: "위쪽" },
-                  { side: "bottom" as const, label: "아래쪽" },
-                  { side: "left" as const, label: "왼쪽" },
-                  { side: "right" as const, label: "오른쪽" },
-                ].map(({ side, label }) => (
-                  <Tooltip.Provider key={side}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <button className="h-[32px] rounded-sm bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-indigo-500/20 dark:shadow-indigo-600/20">
-                          {label}
-                        </button>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          side={side}
-                          sideOffset={5}
-                          className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
-                        >
-                          {label} 툴팁
-                          <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
-                ))}
+              <div className="space-y-8">
+                {/* 방향별 Tooltip 예시 */}
+                <div>
+                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
+                    방향별 Tooltip
+                  </Label.Root>
+                  <div className="flex flex-wrap gap-4">
+                    {[
+                      { side: "top" as const, label: "위쪽", icon: "↑" },
+                      { side: "bottom" as const, label: "아래쪽", icon: "↓" },
+                      { side: "left" as const, label: "왼쪽", icon: "←" },
+                      { side: "right" as const, label: "오른쪽", icon: "→" },
+                    ].map(({ side, label, icon }) => (
+                      <Tooltip.Provider key={side} delayDuration={300}>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button className="h-[32px] rounded-sm bg-indigo-500 hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-indigo-500/20 dark:shadow-indigo-600/20 flex items-center gap-2">
+                              <span>{icon}</span>
+                              <span>{label}</span>
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Portal>
+                            <Tooltip.Content
+                              side={side}
+                              sideOffset={5}
+                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+                            >
+                              {label} 방향 툴팁입니다
+                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                            </Tooltip.Content>
+                          </Tooltip.Portal>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 다양한 트리거 요소 예시 */}
+                <div>
+                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
+                    다양한 트리거 요소
+                  </Label.Root>
+                  <div className="flex flex-wrap items-center gap-6">
+                    {/* 버튼 */}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                            버튼
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            버튼에 대한 툴팁
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    {/* 아이콘 */}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button
+                            aria-label="정보 아이콘"
+                            className="h-[32px] w-[32px] rounded-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            정보 아이콘
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    {/* 링크 */}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <a href="#" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-sm">
+                            링크
+                          </a>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            링크에 대한 툴팁
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    {/* 텍스트 */}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span className="text-gray-700 dark:text-gray-300 text-sm cursor-help border-b border-dashed border-gray-400 dark:border-gray-500">
+                            물음표에 마우스를 올려보세요
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                          >
+                            이것은 도움말 텍스트입니다. 더 긴 설명을 작성할 수도 있습니다.
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                </div>
+
+                {/* 옵션 예시 */}
+                <div>
+                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
+                    Tooltip 옵션
+                  </Label.Root>
+                  <div className="flex flex-wrap gap-4">
+                    {/* 빠른 표시 (delayDuration 짧게) */}
+                    <Tooltip.Provider delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                            즉시 표시
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            지연 없이 즉시 표시됩니다
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    {/* 느린 표시 (delayDuration 길게) */}
+                    <Tooltip.Provider delayDuration={700}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                            지연 표시
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            700ms 후에 표시됩니다
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    {/* Arrow 없음 */}
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                            화살표 없음
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50"
+                          >
+                            화살표가 없는 툴팁
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* No Data */}
+            <Card title="No Data">
+              <div className="space-y-6">
+                {/* 빈 테이블 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">데이터 목록</h3>
+                      <Tooltip.Provider>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button
+                              aria-label="데이터 없음 안내"
+                              className="h-[24px] w-[24px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
+                            >
+                              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Portal>
+                            <Tooltip.Content
+                              side="left"
+                              sideOffset={5}
+                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                            >
+                              현재 등록된 데이터가 없습니다. 새로 추가하려면 상단의 추가 버튼을 클릭하세요.
+                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                            </Tooltip.Content>
+                          </Tooltip.Portal>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </div>
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">데이터가 없습니다</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">새로운 데이터를 추가해보세요</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 빈 리스트 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">검색 결과</h3>
+                    </div>
+                    <div className="flex items-center gap-2 py-8 text-center justify-center">
+                      <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">검색 결과가 없습니다</span>
+                      <Tooltip.Provider>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button
+                              aria-label="검색 결과 없음 안내"
+                              className="h-[20px] w-[20px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Portal>
+                            <Tooltip.Content
+                              side="top"
+                              sideOffset={5}
+                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                            >
+                              다른 검색어를 사용하거나 필터 조건을 변경해보세요.
+                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                            </Tooltip.Content>
+                          </Tooltip.Portal>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 빈 카드 예시 */}
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { title: "저장된 항목", count: 0, icon: "📁" },
+                    { title: "즐겨찾기", count: 0, icon: "⭐" },
+                  ].map((item, index) => (
+                    <div key={index} className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
+                        <Tooltip.Provider>
+                          <Tooltip.Root>
+                            <Tooltip.Trigger asChild>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500">({item.count})</span>
+                                <button
+                                  aria-label={`${item.title} 안내`}
+                                  className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                                >
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </Tooltip.Trigger>
+                            <Tooltip.Portal>
+                              <Tooltip.Content
+                                side="top"
+                                sideOffset={5}
+                                className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                              >
+                                {item.title}에 저장된 항목이 없습니다. 항목을 추가하면 여기에 표시됩니다.
+                                <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                              </Tooltip.Content>
+                            </Tooltip.Portal>
+                          </Tooltip.Root>
+                        </Tooltip.Provider>
+                      </div>
+                      <div className="flex flex-col items-center justify-center py-6">
+                        <span className="text-2xl mb-2">{item.icon}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 인라인 빈 상태 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">상태:</span>
+                    <span className="text-sm text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button
+                            aria-label="상태 안내"
+                            className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="right"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                          >
+                            이 섹션에 표시할 데이터가 없습니다. 데이터를 추가하면 자동으로 표시됩니다.
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -3021,7 +4262,7 @@ export default function Dashboard() {
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm hover:shadow-lg transition-all duration-200 ring-1 ring-gray-100 dark:ring-gray-800">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+      {title && <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>}
       {children}
     </div>
   );
