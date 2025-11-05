@@ -21,29 +21,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
-}
-
-/* Text size adjust for cross-browser compatibility */
-/* Both properties are needed: -webkit- for Safari/iOS, standard for Chrome/Edge/Firefox */
-html,
-:host {
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-}
-
-/* 라이트 모드 기본 스타일 명시 */
-body:not(.dark) {
-  background: #ffffff;
-  color: #171717;
 }
 
 @keyframes slideDown {

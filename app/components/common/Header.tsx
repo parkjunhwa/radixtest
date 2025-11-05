@@ -6,7 +6,7 @@ interface HeaderProps {
   onThemeChange: (theme: "light" | "dark" | "system") => void;
 }
 
-export const Header = React.memo(function Header({ theme, onThemeChange }: HeaderProps) {
+export const Header = function Header({ theme, onThemeChange }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-sm">
       <div className="w-full px-6 py-5">
@@ -103,5 +103,4 @@ export const Header = React.memo(function Header({ theme, onThemeChange }: Heade
       </div>
     </header>
   );
-});
-
+};

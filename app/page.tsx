@@ -3,8 +3,6 @@
 import * as React from "react";
 import { Card } from "./components/common/Card";
 import { Header } from "./components/common/Header";
-import * as Accordion from "@radix-ui/react-accordion";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import * as AspectRatio from "@radix-ui/react-aspect-ratio";
 import * as Avatar from "@radix-ui/react-avatar";
 import * as Checkbox from "@radix-ui/react-checkbox";
@@ -235,11 +233,11 @@ export default function Dashboard() {
         setTheme(savedTheme);
         setResolvedTheme(savedTheme); // resolvedTheme을 선택한 테마로 고정
         // 즉시 테마 적용 (동기적으로)
+        root.classList.remove("dark");
         if (savedTheme === "dark") {
           root.classList.add("dark");
-        } else {
-          root.classList.remove("dark");
         }
+        root.style.colorScheme = savedTheme === "dark" ? "dark" : "light";
       } else if (savedTheme === "system") {
         // 시스템 모드: 시스템 설정에 따름
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -247,23 +245,26 @@ export default function Dashboard() {
         setTheme("system");
         setResolvedTheme(systemTheme);
         // 즉시 테마 적용 (동기적으로)
+        root.classList.remove("dark");
         if (systemTheme === "dark") {
           root.classList.add("dark");
-        } else {
-          root.classList.remove("dark");
         }
+        root.style.colorScheme = systemTheme === "dark" ? "dark" : "light";
       }
     } else {
       // 저장된 테마가 없으면 라이트 모드를 기본값으로 사용
       setTheme("light");
       setResolvedTheme("light");
       root.classList.remove("dark");
+      root.style.colorScheme = "light";
     }
   }, []);
 
   // 시스템 설정 감지 및 해결된 테마 계산 (theme이 "system"일 때만)
+  // 라이트/다크 모드일 때는 시스템 설정을 무시해야 하므로 이 로직은 실행되지 않음
   React.useEffect(() => {
     if (theme !== "system") return;
+    if (typeof window === "undefined") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -282,57 +283,83 @@ export default function Dashboard() {
   }, [theme]);
 
   // 테마 변경 시 적용 (라이트/다크 모드는 시스템 설정 무시, 시스템 모드는 시스템 설정 따름)
-  React.useEffect(() => {
+  // handleThemeChange에서 이미 DOM을 조작하지만, 상태 변경 시에도 동기화를 위해 실행
+  React.useLayoutEffect(() => {
     if (typeof window === "undefined") return;
 
     const root = document.documentElement;
 
     // 라이트/다크 모드는 시스템 설정 무시하고 바로 적용
     if (theme === "light" || theme === "dark") {
+      // resolvedTheme이 theme과 다른 경우 동기화 (시스템 설정이 개입하지 않도록)
+      if (resolvedTheme !== theme) {
+        setResolvedTheme(theme);
+      }
+      
+      // 강제로 클래스 적용
+      root.classList.remove("dark");
       if (theme === "dark") {
         root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
       }
+      
+      // color-scheme도 설정 (시스템 설정 무시)
+      root.style.colorScheme = theme === "dark" ? "dark" : "light";
     } else if (theme === "system") {
       // 시스템 모드는 resolvedTheme을 사용 (시스템 설정에 따름)
+      root.classList.remove("dark");
       if (resolvedTheme === "dark") {
         root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
       }
+      root.style.colorScheme = resolvedTheme === "dark" ? "dark" : "light";
     }
   }, [theme, resolvedTheme]);
 
-  // 테마 변경 시 로컬 스토리지에 저장
-  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
+  // 테마 변경 시 로컬 스토리지에 저장 및 즉시 적용
+  const handleThemeChange = React.useCallback((newTheme: "light" | "dark" | "system") => {
+    // 로컬 스토리지에 저장
     localStorage.setItem("theme", newTheme);
+    
+    // 테마 상태 업데이트
     setTheme(newTheme);
 
     // 라이트/다크 모드: 시스템 설정 무시하고 선택한 테마를 그대로 적용
     if (newTheme === "light" || newTheme === "dark") {
       setResolvedTheme(newTheme); // resolvedTheme을 선택한 테마로 고정
-      // 즉시 테마 적용
-      const root = document.documentElement;
-      if (newTheme === "dark") {
-        root.classList.add("dark");
-      } else {
+      
+      // 즉시 DOM에 적용 (시스템 설정보다 우선) - 동기적으로 처리
+      if (typeof window !== "undefined") {
+        const root = document.documentElement;
+        // 모든 기존 클래스 제거 후 새로 추가
         root.classList.remove("dark");
+        if (newTheme === "dark") {
+          root.classList.add("dark");
+        }
+        
+        // 강제로 다시 적용 (브라우저 캐시 문제 방지)
+        root.style.colorScheme = newTheme === "dark" ? "dark" : "light";
       }
     } else if (newTheme === "system") {
       // 시스템 모드: 시스템 설정에 따름
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const systemTheme = mediaQuery.matches ? "dark" : "light";
-      setResolvedTheme(systemTheme);
-      // 즉시 테마 적용
-      const root = document.documentElement;
-      if (systemTheme === "dark") {
-        root.classList.add("dark");
-      } else {
+      if (typeof window !== "undefined") {
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        const systemTheme = mediaQuery.matches ? "dark" : "light";
+        setResolvedTheme(systemTheme);
+        
+        // 즉시 DOM에 적용
+        const root = document.documentElement;
         root.classList.remove("dark");
+        if (systemTheme === "dark") {
+          root.classList.add("dark");
+        }
+        root.style.colorScheme = systemTheme === "dark" ? "dark" : "light";
       }
     }
-  };
+  }, []);
+
+  // 동적 import를 통한 코드 스플리팅
+  const LazyAccordionSection = React.lazy(() => import("./components/ui-sections/AccordionSection").then(module => ({ default: module.AccordionSection })));
+  const LazyAlertDialogSection = React.lazy(() => import("./components/ui-sections/AlertDialogSection").then(module => ({ default: module.AlertDialogSection })));
+  const LazyDatePickerSection = React.lazy(() => import("./components/ui-sections/DatePickerSection").then(module => ({ default: module.DatePickerSection })));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
@@ -1544,85 +1571,13 @@ export default function Dashboard() {
           </div>
 
           <div className="masonry-grid">
-            {/* Accordion */}
-            <Card title="Accordion">
-              <Accordion.Root
-                type="single"
-                collapsible
-                value={accordionValue}
-                onValueChange={setAccordionValue}
-                className="w-full"
-              >
-                <Accordion.Item value="item-1" className="border-b border-gray-200 dark:border-gray-800">
-                  <Accordion.Header>
-                    <Accordion.Trigger className="flex w-full items-center justify-between py-4 text-left font-medium text-gray-900 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-100 transition-colors group">
-                      <span className="text-gray-900 dark:text-gray-100">Radix UI란 무엇인가요?</span>
-                      <span className="text-gray-500 dark:text-gray-400 transition-transform duration-200 group-data-[state=open]:rotate-180">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </span>
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="overflow-hidden text-sm text-gray-700 dark:text-gray-400 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
-                    <div className="pb-4">
-                      Radix UI는 접근성이 뛰어난 React 컴포넌트 라이브러리입니다. WAI-ARIA 표준을 준수하며 완전히 커스터마이징 가능합니다.
-                    </div>
-                  </Accordion.Content>
-                </Accordion.Item>
-                <Accordion.Item value="item-2" className="border-b border-gray-200 dark:border-gray-800">
-                  <Accordion.Header>
-                    <Accordion.Trigger className="flex w-full items-center justify-between py-4 text-left font-medium text-gray-900 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-100 transition-colors group">
-                      <span className="text-gray-900 dark:text-gray-100">왜 Radix UI를 사용하나요?</span>
-                      <span className="text-gray-500 dark:text-gray-400 transition-transform duration-200 group-data-[state=open]:rotate-180">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </span>
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="overflow-hidden text-sm text-gray-600 dark:text-gray-400">
-                    <div className="pb-4">
-                      접근성, 커스터마이징, 그리고 풍부한 컴포넌트를 제공합니다. TypeScript로 작성되어 타입 안정성을 보장합니다.
-                    </div>
-                  </Accordion.Content>
-                </Accordion.Item>
-              </Accordion.Root>
-            </Card>
+            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
+              <LazyAccordionSection accordionValue={accordionValue} setAccordionValue={setAccordionValue} />
+            </React.Suspense>
 
-            {/* Alert Dialog */}
-            <Card title="Alert Dialog">
-              <AlertDialog.Root open={openAlertDialog} onOpenChange={setOpenAlertDialog}>
-                <AlertDialog.Trigger asChild>
-                  <button className="w-full h-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-red-500/20 dark:shadow-red-600/20">
-                    삭제하기
-                  </button>
-                </AlertDialog.Trigger>
-                <AlertDialog.Portal>
-                  <AlertDialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
-                  <AlertDialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white dark:bg-gray-900 p-6 shadow-xl w-full max-w-md z-50 border border-gray-200 dark:border-gray-800 ring-1 ring-gray-200 dark:ring-gray-800">
-                    <AlertDialog.Title className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                      정말 삭제하시겠습니까?
-                    </AlertDialog.Title>
-                    <AlertDialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                      이 작업은 되돌릴 수 없습니다. 정말로 삭제하시겠습니까?
-                    </AlertDialog.Description>
-                    <div className="flex gap-3 justify-end">
-                      <AlertDialog.Cancel asChild>
-                        <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
-                          취소
-                        </button>
-                      </AlertDialog.Cancel>
-                      <AlertDialog.Action asChild>
-                        <button className="h-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 px-4 text-sm font-medium text-white transition-colors">
-                          삭제
-                        </button>
-                      </AlertDialog.Action>
-                    </div>
-                  </AlertDialog.Content>
-                </AlertDialog.Portal>
-              </AlertDialog.Root>
-            </Card>
+            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
+              <LazyAlertDialogSection openAlertDialog={openAlertDialog} setOpenAlertDialog={setOpenAlertDialog} />
+            </React.Suspense>
 
             {/* Aspect Ratio */}
             <Card title="Aspect Ratio">
@@ -1843,9 +1798,12 @@ export default function Dashboard() {
                     className="w-64 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-xl z-50"
                   >
                     <div className="flex gap-4">
-                      <Avatar.Root className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-800 ring-2 ring-gray-300 dark:ring-gray-700">
-                        <Avatar.Image src="https://i.pravatar.cc/150?img=2" />
-                        <Avatar.Fallback className="bg-purple-500 text-white">JD</Avatar.Fallback>
+                      <Avatar.Root style={{ minWidth: "40px", height: "40px" }} className="rounded-full bg-gray-200 dark:bg-gray-800 ring-2 ring-gray-300 dark:ring-gray-700 overflow-hidden flex items-center justify-center">
+                        <Avatar.Image
+                          src="https://i.pravatar.cc/150?img=2"
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
                       </Avatar.Root>
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100">John Doe</h4>
@@ -2232,7 +2190,7 @@ export default function Dashboard() {
                   </Label.Root>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
-                      <span className="font-mono text-base">₩</span>
+                      <span className="font-mono text-[13px]">₩</span>
                     </div>
                     {/* 입력시 삭제기능 추가 */}
                     <input
@@ -2535,99 +2493,18 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Date Picker */}
-            <Card title="Date Picker">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="datepicker" className="text-xs text-gray-500 dark:text-gray-400">
-                    날짜 선택
-                  </Label.Root>
-                  <Popover.Root
-                    open={datePickerOpen}
-                    onOpenChange={(open) => {
-                      setDatePickerOpen(open);
-                      if (open) {
-                        // 팝오버가 열릴 때 현재 선택된 날짜를 임시 상태로 복사
-                        setTempSelectedDate(selectedDate);
-                      }
-                    }}
-                  >
-                    <Popover.Trigger asChild>
-                      <button
-                        id="datepicker"
-                        className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <span className={selectedDate ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
-                          {selectedDate ? format(selectedDate, "yyyy년 MM월 dd일", { locale: ko }) : "날짜를 선택하세요"}
-                        </span>
-                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    </Popover.Trigger>
-                    <Popover.Portal>
-                      <Popover.Content
-                        className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-xl z-50"
-                        align="start"
-                      >
-                        <DayPicker
-                          mode="single"
-                          selected={tempSelectedDate}
-                          onSelect={handleDateSelect}
-                          locale={ko}
-                          navLayout="around"
-                          className="rdp"
-                          modifiers={{
-                            sunday: (date) => date.getDay() === 0,
-                            saturday: (date) => date.getDay() === 6,
-                          }}
-                          modifiersClassNames={{
-                            sunday: "rdp-day-sunday",
-                            saturday: "rdp-day-saturday",
-                          }}
-                          classNames={{
-                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                            month: "space-y-4",
-                            caption: "flex flex-row justify-between items-center pt-1 relative",
-                            caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
-                            nav: "flex items-center gap-1",
-                            nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
-                            nav_button_previous: "",
-                            nav_button_next: "",
-                            table: "w-full border-collapse space-y-1",
-                            head_row: "flex",
-                            head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
-                            row: "flex w-full mt-2",
-                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "font-medium bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
-                            day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
-                            day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
-                            day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                            day_range_middle: "text-sm aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
-                            day_hidden: "invisible",
-                          }}
-                        />
-                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                          <button
-                            onClick={handleDateCancel}
-                            className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-                          >
-                            취소
-                          </button>
-                          <button
-                            onClick={handleDateConfirm}
-                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
-                          >
-                            확인
-                          </button>
-                        </div>
-                      </Popover.Content>
-                    </Popover.Portal>
-                  </Popover.Root>
-                </div>
-              </div>
-            </Card>
+            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
+              <LazyDatePickerSection
+                selectedDate={selectedDate}
+                tempSelectedDate={tempSelectedDate}
+                datePickerOpen={datePickerOpen}
+                setDatePickerOpen={setDatePickerOpen}
+                setTempSelectedDate={setTempSelectedDate}
+                handleDateSelect={handleDateSelect}
+                handleDateConfirm={handleDateConfirm}
+                handleDateCancel={handleDateCancel}
+              />
+            </React.Suspense>
 
             {/* DateTime Picker */}
             <Card title="DateTime Picker">
@@ -2851,7 +2728,7 @@ export default function Dashboard() {
                           </button>
                           <button
                             onClick={handleDateRangeConfirm}
-                            className="ml-auto h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
                           >
                             확인
                           </button>
