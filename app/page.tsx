@@ -267,16 +267,31 @@ export default function Dashboard() {
     if (typeof window === "undefined") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
+    
     const handleChange = (e: MediaQueryListEvent) => {
-      // 시스템 설정 변경 시 resolvedTheme만 업데이트 (테마 적용은 다른 useEffect에서 처리)
       const systemTheme = e.matches ? "dark" : "light";
       setResolvedTheme(systemTheme);
+      
+      // DOM에 직접 dark 클래스 적용/제거
+      const root = document.documentElement;
+      root.classList.remove("dark");
+      if (systemTheme === "dark") {
+        root.classList.add("dark");
+      }
+      root.style.colorScheme = systemTheme;
     };
 
     // 초기 값 설정 (theme이 "system"으로 변경될 때)
     const initialSystemTheme = mediaQuery.matches ? "dark" : "light";
     setResolvedTheme(initialSystemTheme);
+
+    // 초기 DOM 업데이트
+    const root = document.documentElement;
+    root.classList.remove("dark");
+    if (initialSystemTheme === "dark") {
+      root.classList.add("dark");
+    }
+    root.style.colorScheme = initialSystemTheme;
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);

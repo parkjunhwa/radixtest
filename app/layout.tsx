@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className="antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 transition-colors">
+      <body className="antialiased transition-colors">
         {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document */}
         <script
           suppressHydrationWarning
