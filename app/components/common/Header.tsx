@@ -16,7 +16,7 @@ export const Header = function Header({ theme, onThemeChange }: HeaderProps) {
               Radix UI Dashboard
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              모든 Radix UI 컴포넌트 샘플 컬렉션
+              모든 Radix UI 컴포넌트 컬렉션 정의 - 박준화 수석
             </p>
           </div>
           <div className="flex items-center gap-3">

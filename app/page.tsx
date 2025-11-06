@@ -52,6 +52,9 @@ export default function Dashboard() {
   const [progress, setProgress] = React.useState(33);
   const [sliderValue, setSliderValue] = React.useState([50]);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [openLargeDialog, setOpenLargeDialog] = React.useState(false);
+  const [openFullScreenDialog, setOpenFullScreenDialog] = React.useState(false);
+  const [openScrollableDialog, setOpenScrollableDialog] = React.useState(false);
   const [openAlertDialog, setOpenAlertDialog] = React.useState(false);
   const [isCollapsibleOpen, setIsCollapsibleOpen] = React.useState(false);
   const [isColorPaletteOpen, setIsColorPaletteOpen] = React.useState(false);
@@ -62,7 +65,6 @@ export default function Dashboard() {
   const [radioValue, setRadioValue] = React.useState("option1");
   const [toggleValue, setToggleValue] = React.useState("left");
   const [selectValue, setSelectValue] = React.useState<string>("");
-  const [accordionValue, setAccordionValue] = React.useState<string>("");
   const [checkboxChecked, setCheckboxChecked] = React.useState(false);
   const [multiCheckboxes, setMultiCheckboxes] = React.useState({
     option1: false,
@@ -1587,7 +1589,7 @@ export default function Dashboard() {
 
           <div className="masonry-grid">
             <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
-              <LazyAccordionSection accordionValue={accordionValue} setAccordionValue={setAccordionValue} />
+              <LazyAccordionSection />
             </React.Suspense>
 
             <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
@@ -1616,6 +1618,126 @@ export default function Dashboard() {
               </div>
             </Card>
 
+            {/* Autocomplete */}
+            <Card title="Autocomplete">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="autocomplete" className="text-xs text-gray-500 dark:text-gray-400">
+                    기본 Autocomplete
+                  </Label.Root>
+                  <Popover.Root
+                    open={autocompleteOpen}
+                    onOpenChange={setAutocompleteOpen}
+                  >
+                    <Popover.Anchor asChild>
+                      <div className="relative">
+                        <input
+                          id="autocomplete"
+                          type="text"
+                          placeholder="기술 스택을 검색하세요"
+                          value={autocompleteValue}
+                          onChange={(e) => {
+                            setAutocompleteValue(e.target.value);
+                            setAutocompleteOpen(true);
+                          }}
+                          onFocus={() => {
+                            setAutocompleteOpen(true);
+                          }}
+                          className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                        {autocompleteValue && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setAutocompleteValue("");
+                              setSelectedAutocompleteItem(null);
+                              setAutocompleteOpen(false);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
+                            aria-label="삭제"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                        {selectedAutocompleteItem && (
+                          <div className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
+                            선택됨
+                          </div>
+                        )}
+                      </div>
+                    </Popover.Anchor>
+                    {autocompleteOpen && autocompleteFilteredItems.length > 0 && (
+                      <Popover.Content
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                        onInteractOutside={(e) => {
+                          // 입력 필드나 팝오버 내부 클릭이 아닌 경우에만 닫기
+                          const target = e.target as HTMLElement;
+                          const isInput = target.id === 'autocomplete' || target.closest('[id="autocomplete"]');
+                          const isPopoverContent = target.closest('[data-radix-popover-content]');
+
+                          if (!isInput && !isPopoverContent) {
+                            setAutocompleteOpen(false);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
+                      >
+                        <ScrollArea.Root className="w-full">
+                          <ScrollArea.Viewport className="w-full">
+                            <div className="py-1">
+                              {autocompleteFilteredItems.map((item, index) => {
+                                const isCustomItem = index === 0 && !sampleItems.includes(item);
+                                return (
+                                  <button
+                                    key={`${item}-${index}`}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault(); // 포커스가 input에서 벗어나지 않도록
+                                    }}
+                                    onClick={() => {
+                                      setAutocompleteValue(item);
+                                      setSelectedAutocompleteItem(item);
+                                      setAutocompleteOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedAutocompleteItem === item
+                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      }`}
+                                  >
+                                    {isCustomItem && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
+                                    )}
+                                    {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea.Viewport>
+                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
+                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+                          </ScrollArea.Scrollbar>
+                        </ScrollArea.Root>
+                      </Popover.Content>
+                    )}
+                  </Popover.Root>
+                  {selectedAutocompleteItem && (
+                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">선택된 항목:</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedAutocompleteItem}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
             {/* Avatar */}
             <Card title="Avatar">
               <div className="flex items-center gap-4">
@@ -1639,6 +1761,125 @@ export default function Dashboard() {
                     JD
                   </Avatar.Fallback>
                 </Avatar.Root>
+              </div>
+            </Card>
+
+            {/* Badge */}
+            <Card title="Badge">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center rounded-sm bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-200">
+                  기본
+                </span>
+                <span className="inline-flex items-center rounded-sm bg-green-100 dark:bg-green-900/30 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-200">
+                  성공
+                </span>
+                <span className="inline-flex items-center rounded-sm bg-yellow-100 dark:bg-yellow-900/30 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:text-yellow-200">
+                  경고
+                </span>
+                <span className="inline-flex items-center rounded-sm bg-red-100 dark:bg-red-900/30 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:text-red-200">
+                  오류
+                </span>
+                <span className="inline-flex items-center rounded-sm bg-gray-100 dark:bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-200">
+                  중립
+                </span>
+                <span className="inline-flex items-center rounded-sm bg-purple-100 dark:bg-purple-900/30 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:text-purple-200">
+                  프리미엄
+                </span>
+              </div>
+            </Card>
+
+            {/* Button */}
+            <Card title="Button">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">기본 버튼</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium transition-colors">
+                      기본 버튼
+                    </button>
+                    <button className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                      보조 버튼
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Disabled</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button 
+                      disabled
+                      className="h-[32px] px-4 rounded-sm bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
+                    >
+                      비활성화된 버튼
+                    </button>
+                    <button 
+                      disabled
+                      className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-gray-400 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
+                    >
+                      비활성화된 보조 버튼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Callout */}
+            <Card title="Callout">
+              <div className="space-y-3">
+                <div className="rounded-sm border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">정보</h4>
+                      <p className="text-sm text-blue-800 dark:text-blue-200">이것은 정보를 전달하는 콜아웃입니다. 중요한 내용이나 팁을 표시할 때 사용합니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-sm border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-sm font-semibold text-green-900 dark:text-green-100 mb-1">성공</h4>
+                      <p className="text-sm text-green-800 dark:text-green-200">작업이 성공적으로 완료되었습니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-sm border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-1">경고</h4>
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">주의가 필요한 사항입니다. 이 작업은 되돌릴 수 없을 수 있습니다.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-sm border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-1">오류</h4>
+                      <p className="text-sm text-red-800 dark:text-red-200">오류가 발생했습니다. 다시 시도해주세요.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">중립</h4>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">일반적인 정보나 알림을 표시합니다.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -1682,6 +1923,46 @@ export default function Dashboard() {
                       옵션 {key.slice(-1)}
                     </Label.Root>
                   </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Checkbox Cards */}
+            <Card title="Checkbox Cards">
+              <div className="space-y-2">
+                {[
+                  { id: "card1", label: "기본 기능", description: "필수 기능들이 포함됩니다", checked: multiCheckboxes.option1 },
+                  { id: "card2", label: "고급 기능", description: "추가 기능들이 포함됩니다", checked: multiCheckboxes.option2 },
+                  { id: "card3", label: "프리미엄 기능", description: "모든 기능이 포함됩니다", checked: multiCheckboxes.option3 },
+                ].map((option, idx) => (
+                  <label
+                    key={option.id}
+                    className={`flex items-start gap-3 rounded-sm border-2 p-3 cursor-pointer transition-all ${option.checked
+                      ? "border-blue-500 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900"
+                      }`}
+                  >
+                    <Checkbox.Root
+                      id={option.id}
+                      checked={option.checked}
+                      onCheckedChange={(checked) =>
+                        setMultiCheckboxes((prev) => ({ ...prev, [`option${idx + 1}`]: checked === true }))
+                      }
+                      className="mt-0.5 flex h-5 w-5 items-center justify-center rounded border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 transition-colors"
+                    >
+                      <Checkbox.Indicator className="text-white">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </Checkbox.Indicator>
+                    </Checkbox.Root>
+                    <div className="flex-1">
+                      <div className={`text-sm font-medium ${option.checked ? "text-blue-900 dark:text-blue-100" : "text-gray-900 dark:text-gray-100"}`}>
+                        {option.label}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{option.description}</div>
+                    </div>
+                  </label>
                 ))}
               </div>
             </Card>
@@ -1730,38 +2011,470 @@ export default function Dashboard() {
               </ContextMenu.Root>
             </Card>
 
+            {/* Data List */}
+            <Card title="Data List">
+              <dl className="space-y-4">
+                <div>
+                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">이름</dt>
+                  <dd className="text-sm text-gray-700 dark:text-gray-300">홍길동</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">이메일</dt>
+                  <dd className="text-sm text-gray-700 dark:text-gray-300">hong@example.com</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">전화번호</dt>
+                  <dd className="text-sm text-gray-700 dark:text-gray-300">010-1234-5678</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">주소</dt>
+                  <dd className="text-sm text-gray-700 dark:text-gray-300">서울특별시 강남구</dd>
+                </div>
+              </dl>
+            </Card>
+
+            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
+              <LazyDatePickerSection
+                selectedDate={selectedDate}
+                tempSelectedDate={tempSelectedDate}
+                datePickerOpen={datePickerOpen}
+                setDatePickerOpen={setDatePickerOpen}
+                setTempSelectedDate={setTempSelectedDate}
+                handleDateSelect={handleDateSelect}
+                handleDateConfirm={handleDateConfirm}
+                handleDateCancel={handleDateCancel}
+              />
+            </React.Suspense>
+
+            {/* Date Range Picker */}
+            <Card title="Date Range Picker">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="daterangepicker" className="text-xs text-gray-500 dark:text-gray-400">
+                    날짜 범위 선택
+                  </Label.Root>
+                  <Popover.Root
+                    open={dateRangePickerOpen}
+                    onOpenChange={(open) => {
+                      setDateRangePickerOpen(open);
+                      if (open) {
+                        // 팝오버가 열릴 때 현재 선택된 날짜 범위를 임시 상태로 복사
+                        setTempSelectedDateRange(selectedDateRange);
+                      }
+                    }}
+                  >
+                    <Popover.Trigger asChild>
+                      <button
+                        id="daterangepicker"
+                        className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <span className={selectedDateRange.from && selectedDateRange.to ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
+                          {selectedDateRange.from && selectedDateRange.to
+                            ? `${format(selectedDateRange.from, "yyyy년 MM월 dd일", { locale: ko })} - ${format(selectedDateRange.to, "yyyy년 MM월 dd일", { locale: ko })}`
+                            : "날짜 범위를 선택하세요"}
+                        </span>
+                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content
+                        className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-xl z-50"
+                        align="start"
+                      >
+                        <DayPicker
+                          mode="range"
+                          selected={tempSelectedDateRange}
+                          onSelect={handleDateRangeSelect}
+                          locale={ko}
+                          numberOfMonths={2}
+                          navLayout="around"
+                          className="rdp"
+                          modifiers={{
+                            sunday: (date) => date.getDay() === 0,
+                            saturday: (date) => date.getDay() === 6,
+                          }}
+                          modifiersClassNames={{
+                            sunday: "rdp-day-sunday",
+                            saturday: "rdp-day-saturday",
+                          }}
+                          classNames={{
+                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                            month: "space-y-4",
+                            caption: "flex flex-row justify-between items-center pt-1 relative",
+                            caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
+                            nav: "flex items-center gap-1",
+                            nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
+                            nav_button_previous: "",
+                            nav_button_next: "",
+                            table: "w-full border-collapse space-y-1",
+                            head_row: "flex",
+                            head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
+                            row: "flex w-full mt-2",
+                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
+                            day_selected: "font-normal bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_start: "font-normal bg-blue-500 text-white rounded-l-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_end: "font-normal bg-blue-500 text-white rounded-r-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                            day_range_middle: "font-normal aria-selected:bg-blue-50 aria-selected:text-gray-900",
+                            day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
+                            day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
+                            day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
+                            day_hidden: "invisible",
+                          }}
+                        />
+                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+                          <button
+                            onClick={handleDateRangeCancel}
+                            className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+                          >
+                            취소
+                          </button>
+                          <button
+                            onClick={handleDateRangeConfirm}
+                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
+                          >
+                            확인
+                          </button>
+                        </div>
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
+                </div>
+              </div>
+            </Card>
+
+            {/* DateTime Picker */}
+            <Card title="DateTime Picker">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="datetimepicker" className="text-xs text-gray-500 dark:text-gray-400">
+                    날짜 및 시간 선택
+                  </Label.Root>
+                  <Popover.Root
+                    open={dateTimePickerOpen}
+                    onOpenChange={(open) => {
+                      setDateTimePickerOpen(open);
+                      if (open) {
+                        // 팝오버가 열릴 때 현재 선택된 날짜와 시간을 임시 상태로 복사
+                        setTempSelectedDateTime(selectedDateTime);
+                      }
+                    }}
+                  >
+                    <Popover.Trigger asChild>
+                      <button
+                        id="datetimepicker"
+                        className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <span className={selectedDateTime ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
+                          {selectedDateTime ? format(selectedDateTime, "yyyy년 MM월 dd일 HH:mm", { locale: ko }) : "날짜와 시간을 선택하세요"}
+                        </span>
+                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content
+                        className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-xl z-50"
+                        align="start"
+                      >
+                        <div className="space-y-4">
+                          <DayPicker
+                            mode="single"
+                            selected={tempSelectedDateTime}
+                            onSelect={handleDateTimeSelect}
+                            locale={ko}
+                            navLayout="around"
+                            className="rdp"
+                            modifiers={{
+                              sunday: (date) => date.getDay() === 0,
+                              saturday: (date) => date.getDay() === 6,
+                            }}
+                            modifiersClassNames={{
+                              sunday: "rdp-day-sunday",
+                              saturday: "rdp-day-saturday",
+                            }}
+                            classNames={{
+                              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                              month: "space-y-4",
+                              caption: "flex flex-row justify-between items-center pt-1 relative",
+                              caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
+                              nav: "flex items-center gap-1",
+                              nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
+                              nav_button_previous: "",
+                              nav_button_next: "",
+                              table: "w-full border-collapse space-y-1",
+                              head_row: "flex",
+                              head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
+                              row: "flex w-full mt-2",
+                              cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
+                              day_selected: "font-medium bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
+                              day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
+                              day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
+                              day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
+                              day_range_middle: "font-medium aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
+                              day_hidden: "invisible",
+                            }}
+                          />
+                          <div className="border-t border-gray-200 dark:border-gray-800 pt-3">
+                            <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-2 block">
+                              시간 선택
+                            </Label.Root>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                min="0"
+                                max="23"
+                                value={timeValue.hours}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val === "" || (parseInt(val) >= 0 && parseInt(val) <= 23)) {
+                                    setTimeValue({ ...timeValue, hours: val });
+                                  }
+                                }}
+                                className="h-[32px] w-16 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100"
+                                placeholder="00"
+                              />
+                              <span className="text-gray-500 dark:text-gray-400">:</span>
+                              <input
+                                type="number"
+                                min="0"
+                                max="59"
+                                value={timeValue.minutes}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val === "" || (parseInt(val) >= 0 && parseInt(val) <= 59)) {
+                                    setTimeValue({ ...timeValue, minutes: val });
+                                  }
+                                }}
+                                className="h-[32px] w-16 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100"
+                                placeholder="00"
+                              />
+                              <button
+                                onClick={() => {
+                                  if (tempSelectedDateTime) {
+                                    const hours = timeValue.hours.padStart(2, "0");
+                                    const minutes = timeValue.minutes.padStart(2, "0");
+                                    const newDate = new Date(tempSelectedDateTime);
+                                    newDate.setHours(parseInt(hours), parseInt(minutes));
+                                    setTempSelectedDateTime(newDate);
+                                    // 시간 적용 시 바로 저장 및 팝오버 닫기
+                                    setSelectedDateTime(newDate);
+                                    setDateTimePickerOpen(false);
+                                  }
+                                }}
+                                className="ml-auto h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+                              >
+                                시간 적용
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
+                </div>
+              </div>
+            </Card>
+
             {/* Dialog */}
             <Card title="Dialog">
-              <Dialog.Root open={openDialog} onOpenChange={setOpenDialog}>
-                <Dialog.Trigger asChild>
-                  <button className="w-full h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-blue-500/20 dark:shadow-blue-600/20">
-                    다이얼로그 열기
-                  </button>
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
-                  <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white dark:bg-gray-900 p-6 shadow-xl w-full max-w-md z-50 border border-gray-200 dark:border-gray-800">
-                    <Dialog.Title className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                      다이얼로그 제목
-                    </Dialog.Title>
-                    <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                      이것은 다이얼로그 설명입니다. 모달 형태로 표시됩니다.
-                    </Dialog.Description>
-                    <div className="flex gap-3 justify-end">
-                      <Dialog.Close asChild>
-                        <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
-                          닫기
-                        </button>
-                      </Dialog.Close>
-                      <Dialog.Close asChild>
-                        <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
-                          확인
-                        </button>
-                      </Dialog.Close>
-                    </div>
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
+              <div className="space-y-4">
+                {/* 기본 모달 */}
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">기본 모달</p>
+                  <Dialog.Root open={openDialog} onOpenChange={setOpenDialog}>
+                    <Dialog.Trigger asChild>
+                      <button className="w-full h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-blue-500/20 dark:shadow-blue-600/20">
+                        기본 모달 열기
+                      </button>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
+                      <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white dark:bg-gray-900 p-6 shadow-xl w-full max-w-md z-50 border border-gray-200 dark:border-gray-800">
+                        <Dialog.Title className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                          기본 모달 제목
+                        </Dialog.Title>
+                        <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                          이것은 기본 크기의 모달입니다. 중앙에 표시되며 최대 너비가 제한되어 있습니다.
+                        </Dialog.Description>
+                        <div className="flex gap-3 justify-end">
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
+                              닫기
+                            </button>
+                          </Dialog.Close>
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                              확인
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
+                </div>
+
+                {/* 큰 모달 */}
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">큰 모달</p>
+                  <Dialog.Root open={openLargeDialog} onOpenChange={setOpenLargeDialog}>
+                    <Dialog.Trigger asChild>
+                      <button className="w-full h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-blue-500/20 dark:shadow-blue-600/20">
+                        큰 모달 열기
+                      </button>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
+                      <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white dark:bg-gray-900 p-6 shadow-xl w-full max-w-2xl z-50 border border-gray-200 dark:border-gray-800">
+                        <Dialog.Title className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                          큰 모달 제목
+                        </Dialog.Title>
+                        <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                          이것은 더 큰 크기의 모달입니다. 더 많은 콘텐츠를 표시할 수 있습니다.
+                        </Dialog.Description>
+                        <div className="space-y-4 mb-6">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded-sm bg-gray-50 dark:bg-gray-800">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">항목 1</p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">설명 내용입니다.</p>
+                            </div>
+                            <div className="p-4 rounded-sm bg-gray-50 dark:bg-gray-800">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">항목 2</p>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">설명 내용입니다.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 justify-end">
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
+                              닫기
+                            </button>
+                          </Dialog.Close>
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                              확인
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
+                </div>
+
+                {/* 전체 화면 모달 */}
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">전체 화면 모달</p>
+                  <Dialog.Root open={openFullScreenDialog} onOpenChange={setOpenFullScreenDialog}>
+                    <Dialog.Trigger asChild>
+                      <button className="w-full h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-blue-500/20 dark:shadow-blue-600/20">
+                        전체 화면 모달 열기
+                      </button>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
+                      <Dialog.Content className="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col">
+                        {/* 헤더 */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
+                          <Dialog.Title className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                            전체 화면 모달
+                          </Dialog.Title>
+                          <Dialog.Close asChild>
+                            <button 
+                              aria-label="닫기"
+                              className="h-8 w-8 rounded-sm flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                        {/* 콘텐츠 */}
+                        <div className="flex-1 overflow-y-auto p-6">
+                          <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            이것은 전체 화면을 차지하는 모달입니다. 많은 콘텐츠를 표시할 때 유용합니다.
+                          </Dialog.Description>
+                          <div className="space-y-4">
+                            {Array.from({ length: 20 }).map((_, i) => (
+                              <div key={i} className="p-4 rounded-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">섹션 {i + 1}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  이것은 스크롤 가능한 콘텐츠 영역입니다. 긴 내용을 표시할 수 있습니다.
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {/* 푸터 */}
+                        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-800">
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
+                              취소
+                            </button>
+                          </Dialog.Close>
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                              저장
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
+                </div>
+
+                {/* 스크롤 가능한 모달 */}
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">스크롤 가능한 모달</p>
+                  <Dialog.Root open={openScrollableDialog} onOpenChange={setOpenScrollableDialog}>
+                    <Dialog.Trigger asChild>
+                      <button className="w-full h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-blue-500/20 dark:shadow-blue-600/20">
+                        스크롤 가능한 모달 열기
+                      </button>
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 bg-black/50 dark:bg-black/70 animate-fadeIn z-50" />
+                      <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-white dark:bg-gray-900 shadow-xl w-full max-w-lg max-h-[80vh] z-50 border border-gray-200 dark:border-gray-800 flex flex-col">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+                          <Dialog.Title className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                            스크롤 가능한 모달
+                          </Dialog.Title>
+                          <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400">
+                            콘텐츠가 많을 때 스크롤할 수 있는 모달입니다.
+                          </Dialog.Description>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6">
+                          <div className="space-y-4">
+                            {Array.from({ length: 15 }).map((_, i) => (
+                              <div key={i} className="p-4 rounded-sm bg-gray-50 dark:bg-gray-800">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">항목 {i + 1}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  이것은 스크롤 가능한 콘텐츠입니다. 많은 정보를 표시할 수 있습니다.
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex gap-3 justify-end p-6 border-t border-gray-200 dark:border-gray-800">
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
+                              닫기
+                            </button>
+                          </Dialog.Close>
+                          <Dialog.Close asChild>
+                            <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors">
+                              확인
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>
+                </div>
+              </div>
             </Card>
 
             {/* Dropdown Menu */}
@@ -1834,11 +2547,50 @@ export default function Dashboard() {
               </HoverCard.Root>
             </Card>
 
+            {/* Icon Button */}
+            <Card title="Icon Button">
+              <div className="flex flex-wrap items-center gap-2">
+                <button aria-label="추가" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+                <button aria-label="추가" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+                <button aria-label="보기" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+                <button aria-label="삭제" className="h-[32px] w-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </Card>
+
+            {/* Inset */}
+            <Card title="Inset">
+              <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 flex flex-col gap-2" >
+                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">이것은 Inset 컴포넌트 예시입니다.</p>
+                </div>
+                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">내용이 중첩된 컨테이너 안에 표시됩니다.</p>
+                </div>
+              </div>
+            </Card>
+
             {/* Label */}
             <Card title="Label">
               <div className="flex flex-col gap-6">
                 {/* 상하 배치 예시 */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">상하 배치</h3>
                   <div className="flex flex-col gap-2">
                     <Label.Root htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1865,9 +2617,9 @@ export default function Dashboard() {
                 </div>
 
                 {/* 좌우 배치 예시 */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">좌우 배치</h3>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
                       이메일 주소
                     </Label.Root>
@@ -1878,7 +2630,7 @@ export default function Dashboard() {
                       className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <Label.Root htmlFor="password-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
                       비밀번호
                     </Label.Root>
@@ -1889,7 +2641,7 @@ export default function Dashboard() {
                       className="flex-1 h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
                       이름
                     </Label.Root>
@@ -1903,7 +2655,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* 필수 항목 예시 */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">필수 항목 표시</h3>
                   <div className="flex flex-col gap-2">
                     <Label.Root htmlFor="email-required" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1927,7 +2679,7 @@ export default function Dashboard() {
                       className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <Label.Root htmlFor="email-horizontal" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
                       전화번호 <span className="text-red-500">*</span>
                     </Label.Root>
@@ -1942,132 +2694,995 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Validation */}
-            <Card title="Validation">
-              <div className="space-y-6">
-                {/* 이메일 검증 에러 */}
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="email-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    이메일 주소 <span className="text-red-500">*</span>
-                  </Label.Root>
-                  <input
-                    id="email-validation"
-                    type="email"
-                    placeholder="email@example.com"
-                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    defaultValue="invalid-email"
-                  />
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    올바른 이메일 형식이 아닙니다
-                  </p>
-                </div>
+            {/* Menubar */}
+            <Card title="Menubar">
+              <Menubar.Root className="flex gap-1 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-1">
+                <Menubar.Menu>
+                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
+                    파일
+                  </Menubar.Trigger>
+                  <Menubar.Portal>
+                    <Menubar.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
+                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
+                        새로 만들기
+                      </Menubar.Item>
+                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
+                        열기
+                      </Menubar.Item>
+                      <Menubar.Separator className="my-1 h-px bg-gray-200 dark:bg-gray-800" />
+                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
+                        저장
+                      </Menubar.Item>
+                    </Menubar.Content>
+                  </Menubar.Portal>
+                </Menubar.Menu>
+                <Menubar.Menu>
+                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
+                    편집
+                  </Menubar.Trigger>
+                  <Menubar.Portal>
+                    <Menubar.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
+                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
+                        실행 취소
+                      </Menubar.Item>
+                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
+                        다시 실행
+                      </Menubar.Item>
+                    </Menubar.Content>
+                  </Menubar.Portal>
+                </Menubar.Menu>
+                <Menubar.Menu>
+                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
+                    보기
+                  </Menubar.Trigger>
+                </Menubar.Menu>
+              </Menubar.Root>
+            </Card>
 
-                {/* 비밀번호 검증 에러 */}
+            {/* Multi Autocomplete */}
+            <Card title="Multi Autocomplete">
+              <div className="space-y-4">
                 <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="password-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    비밀번호 <span className="text-red-500">*</span>
+                  <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
+                    멀티 선택 Autocomplete (Chip 형태)
                   </Label.Root>
-                  <input
-                    id="password-validation"
-                    type="password"
-                    placeholder="••••••••"
-                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    defaultValue="123"
-                  />
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    비밀번호는 최소 8자 이상이어야 합니다
-                  </p>
-                </div>
+                  <Popover.Root
+                    open={multiAutocompleteOpen}
+                    onOpenChange={setMultiAutocompleteOpen}
+                  >
+                    <Popover.Anchor asChild>
+                      <div className="relative min-h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent flex flex-wrap gap-1 items-center">
+                        {/* 선택된 항목들 (Chip) */}
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <div
+                            key={`${item}-${index}`}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-blue-500 dark:bg-blue-600 text-white text-sm"
+                          >
+                            <span>{item}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSelectedMultiAutocompleteItems(prev =>
+                                  prev.filter(selectedItem => selectedItem !== item)
+                                );
+                                setMultiAutocompleteOpen(true);
+                              }}
+                              className="hover:bg-blue-600 dark:hover:bg-blue-700 rounded-sm p-0.5 transition-colors"
+                              aria-label={`${item} 제거`}
+                            >
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                        {/* 입력 필드 */}
+                        <input
+                          id="multiautocomplete"
+                          type="text"
+                          placeholder={selectedMultiAutocompleteItems.length === 0 ? "기술 스택을 검색하세요" : ""}
+                          value={multiAutocompleteValue}
+                          onChange={(e) => {
+                            setMultiAutocompleteValue(e.target.value);
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          onFocus={() => {
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          className="flex-1 min-w-[120px] h-[24px] bg-transparent text-sm text-left focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                      </div>
+                    </Popover.Anchor>
+                    {multiAutocompleteOpen && multiAutocompleteFilteredItems.length > 0 && (
+                      <Popover.Content
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                        onInteractOutside={(e) => {
+                          const target = e.target as HTMLElement;
+                          const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
+                          const isPopoverContent = target.closest('[data-radix-popover-content]');
 
-                {/* 전화번호 검증 에러 */}
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="phone-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    전화번호 <span className="text-red-500">*</span>
-                  </Label.Root>
-                  <input
-                    id="phone-validation"
-                    type="tel"
-                    placeholder="010-1234-5678"
-                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    defaultValue="123"
-                  />
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)
-                  </p>
-                </div>
-
-                {/* 이름 검증 에러 */}
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="name-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    이름 <span className="text-red-500">*</span>
-                  </Label.Root>
-                  <input
-                    id="name-validation"
-                    type="text"
-                    placeholder="홍길동"
-                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    defaultValue=""
-                  />
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    이름을 입력해주세요
-                  </p>
-                </div>
-
-                {/* 성공 상태 예시 */}
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="success-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    사용자명
-                  </Label.Root>
-                  <input
-                    id="success-validation"
-                    type="text"
-                    placeholder="사용자명"
-                    className="h-[32px] rounded-sm border border-green-500 dark:border-green-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    defaultValue="validuser"
-                  />
-                  <p className="text-xs text-green-500 dark:text-green-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    사용 가능한 사용자명입니다
-                  </p>
-                </div>
-
-                {/* 좌우 배치 - 에러 메시지 */}
-                <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">좌우 배치 (에러)</h3>
-                  <div className="flex items-start gap-4">
-                    <Label.Root htmlFor="email-horizontal-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0 pt-2">
-                      이메일 <span className="text-red-500">*</span>
-                    </Label.Root>
-                    <div className="flex-1 flex flex-col gap-2">
-                      <input
-                        id="email-horizontal-validation"
-                        type="email"
-                        placeholder="email@example.com"
-                        className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                        defaultValue="wrong-email"
-                      />
-                      <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        올바른 이메일 형식이 아닙니다
+                          if (!isInput && !isPopoverContent) {
+                            setMultiAutocompleteOpen(false);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
+                      >
+                        <ScrollArea.Root className="w-full">
+                          <ScrollArea.Viewport className="w-full">
+                            <div className="py-1">
+                              {multiAutocompleteFilteredItems.map((item, index) => {
+                                const isCustomItem = index === 0 && !sampleItems.includes(item);
+                                return (
+                                  <button
+                                    key={`${item}-${index}`}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                    }}
+                                    onClick={() => {
+                                      if (!selectedMultiAutocompleteItems.includes(item)) {
+                                        setSelectedMultiAutocompleteItems(prev => [...prev, item]);
+                                        setMultiAutocompleteValue("");
+                                        setMultiAutocompleteOpen(true);
+                                      }
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedMultiAutocompleteItems.includes(item)
+                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      }`}
+                                  >
+                                    {isCustomItem && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
+                                    )}
+                                    {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea.Viewport>
+                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
+                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+                          </ScrollArea.Scrollbar>
+                        </ScrollArea.Root>
+                      </Popover.Content>
+                    )}
+                  </Popover.Root>
+                  {selectedMultiAutocompleteItems.length > 0 && (
+                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        선택된 항목 ({selectedMultiAutocompleteItems.length}개):
                       </p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <span
+                            key={`${item}-${index}`}
+                            className="text-xs px-2 py-1 rounded-sm bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Navigation Menu */}
+            <Card title="Navigation Menu">
+              <NavigationMenu.Root className="relative">
+                <NavigationMenu.List className="flex gap-2 flex-wrap items-center">
+                  <NavigationMenu.Item>
+                    <NavigationMenu.Link
+                      href="#"
+                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      홈
+                    </NavigationMenu.Link>
+                  </NavigationMenu.Item>
+                  <NavigationMenu.Item>
+                    <NavigationMenu.Link
+                      href="#"
+                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      소개
+                    </NavigationMenu.Link>
+                  </NavigationMenu.Item>
+                  <NavigationMenu.Item>
+                    <NavigationMenu.Trigger className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
+                      제품
+                    </NavigationMenu.Trigger>
+                    <NavigationMenu.Content className="w-48 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 shadow-xl">
+                      <NavigationMenu.Link
+                        href="#"
+                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                      >
+                        제품 1
+                      </NavigationMenu.Link>
+                      <NavigationMenu.Link
+                        href="#"
+                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                      >
+                        제품 2
+                      </NavigationMenu.Link>
+                      <NavigationMenu.Link
+                        href="#"
+                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                      >
+                        제품 3
+                      </NavigationMenu.Link>
+                    </NavigationMenu.Content>
+                  </NavigationMenu.Item>
+                  <NavigationMenu.Item>
+                    <NavigationMenu.Link
+                      href="#"
+                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+                    >
+                      연락처
+                    </NavigationMenu.Link>
+                  </NavigationMenu.Item>
+                </NavigationMenu.List>
+                <div className="absolute left-0 top-full mt-2 w-full">
+                  <NavigationMenu.Viewport className="relative w-full origin-top-center transition-all duration-300 z-50" />
+                </div>
+              </NavigationMenu.Root>
+            </Card>
+
+            {/* No Data */}
+            <Card title="No Data">
+              <div className="space-y-6">
+                {/* 빈 테이블 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">데이터 목록</h3>
+                      <Tooltip.Provider>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button
+                              aria-label="데이터 없음 안내"
+                              className="h-[24px] w-[24px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
+                            >
+                              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Portal>
+                            <Tooltip.Content
+                              side="left"
+                              sideOffset={5}
+                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                            >
+                              현재 등록된 데이터가 없습니다. 새로 추가하려면 상단의 추가 버튼을 클릭하세요.
+                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                            </Tooltip.Content>
+                          </Tooltip.Portal>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </div>
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">데이터가 없습니다</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">새로운 데이터를 추가해보세요</p>
                     </div>
                   </div>
+                </div>
+
+                {/* 빈 리스트 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">검색 결과</h3>
+                    </div>
+                    <div className="flex items-center gap-2 py-8 text-center justify-center">
+                      <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">검색 결과가 없습니다</span>
+                      <Tooltip.Provider>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button
+                              aria-label="검색 결과 없음 안내"
+                              className="h-[20px] w-[20px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Portal>
+                            <Tooltip.Content
+                              side="top"
+                              sideOffset={5}
+                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                            >
+                              다른 검색어를 사용하거나 필터 조건을 변경해보세요.
+                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                            </Tooltip.Content>
+                          </Tooltip.Portal>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 빈 카드 예시 */}
+                <div className="grid gap-6">
+                  {[
+                    { title: "저장된 항목", count: 0, icon: "📁" },
+                    { title: "즐겨찾기", count: 0, icon: "⭐" },
+                  ].map((item, index) => (
+                    <div key={index} className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
+                        <Tooltip.Provider>
+                          <Tooltip.Root>
+                            <Tooltip.Trigger asChild>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400 dark:text-gray-500">({item.count})</span>
+                                <button
+                                  aria-label={`${item.title} 안내`}
+                                  className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </Tooltip.Trigger>
+                            <Tooltip.Portal>
+                              <Tooltip.Content
+                                side="top"
+                                sideOffset={5}
+                                className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                              >
+                                {item.title}에 저장된 항목이 없습니다. 항목을 추가하면 여기에 표시됩니다.
+                                <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                              </Tooltip.Content>
+                            </Tooltip.Portal>
+                          </Tooltip.Root>
+                        </Tooltip.Provider>
+                      </div>
+                      <div className="flex flex-col items-center justify-center py-6">
+                        <span className="text-2xl mb-2">{item.icon}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 인라인 빈 상태 예시 */}
+                <div className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">상태:</span>
+                    <span className="text-sm text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button
+                            aria-label="상태 안내"
+                            className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="right"
+                            sideOffset={5}
+                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
+                          >
+                            이 섹션에 표시할 데이터가 없습니다. 데이터를 추가하면 자동으로 표시됩니다.
+                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Popover */}
+            <Card title="Popover">
+              <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <Popover.Trigger asChild>
+                  <button className="w-full h-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-green-500/20 dark:shadow-green-600/20">
+                    팝오버 열기
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    sideOffset={5}
+                    className="w-64 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-xl z-50"
+                  >
+                    <Popover.Arrow className="fill-white dark:fill-gray-900" />
+                    <h4 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">팝오버 제목</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      이것은 팝오버 콘텐츠입니다. 버튼을 클릭하면 표시됩니다.
+                    </p>
+                    <Popover.Close asChild>
+                      <button className="w-full h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
+                        닫기
+                      </button>
+                    </Popover.Close>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+            </Card>
+
+            {/* Progress */}
+            <Card title="Progress">
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-700 dark:text-gray-300">진행률</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{progress}%</span>
+                  </div>
+                  <Progress.Root
+                    value={progress}
+                    className="h-3 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800 shadow-inner"
+                  >
+                    <Progress.Indicator
+                      className="h-full bg-blue-500 dark:bg-blue-600 transition-all duration-300 shadow-sm"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </Progress.Root>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setProgress(Math.max(0, progress - 10))}
+                    className="flex-1 h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors"
+                  >
+                    -10%
+                  </button>
+                  <button
+                    onClick={() => setProgress(Math.min(100, progress + 10))}
+                    className="flex-1 h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors"
+                  >
+                    +10%
+                  </button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Radio Cards */}
+            <Card title="Radio Cards">
+              <RadioGroup.Root value={radioValue} onValueChange={setRadioValue} className="space-y-2">
+                {[
+                  { value: "option1", label: "기본 옵션", description: "이것은 기본 옵션입니다" },
+                  { value: "option2", label: "프리미엄 옵션", description: "추가 기능이 포함된 옵션입니다" },
+                  { value: "option3", label: "엔터프라이즈 옵션", description: "모든 기능이 포함된 옵션입니다" },
+                ].map((option) => (
+                  <label
+                    key={option.value}
+                    className={`flex items-start gap-3 rounded-sm border-2 p-3 cursor-pointer transition-all ${radioValue === option.value
+                      ? "border-blue-500 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900"
+                      }`}
+                  >
+                    <RadioGroup.Item
+                      value={option.value}
+                      className="mt-0.5 h-4 w-4 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 data-[state=checked]:border-blue-500 dark:data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
+                    >
+                      <RadioGroup.Indicator className="flex items-center justify-center">
+                        <div className="h-2 w-2 rounded-full bg-white" />
+                      </RadioGroup.Indicator>
+                    </RadioGroup.Item>
+                    <div className="flex-1">
+                      <div className={`text-sm font-medium ${radioValue === option.value ? "text-blue-900 dark:text-blue-100" : "text-gray-900 dark:text-gray-100"}`}>
+                        {option.label}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{option.description}</div>
+                    </div>
+                  </label>
+                ))}
+              </RadioGroup.Root>
+            </Card>
+
+            {/* Radio Group */}
+            <Card title="Radio Group">
+              <RadioGroup.Root value={radioValue} onValueChange={setRadioValue}>
+                <div className="flex flex-col gap-3">
+                  {["option1", "option2", "option3"].map((option) => (
+                    <div key={option} className="flex items-center gap-3">
+                      <RadioGroup.Item
+                        value={option}
+                        id={option}
+                        className="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 bg-white dark:bg-gray-900 transition-colors"
+                      >
+                        <RadioGroup.Indicator className="flex items-center justify-center">
+                          <div className="h-3 w-3 rounded-full bg-blue-500 dark:bg-blue-600" />
+                        </RadioGroup.Indicator>
+                      </RadioGroup.Item>
+                      <Label.Root htmlFor={option} className="text-sm cursor-pointer text-gray-700 dark:text-gray-300">
+                        옵션 {option.slice(-1)}
+                      </Label.Root>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup.Root>
+            </Card>
+
+            {/* Radius Examples */}
+            <Card title="Radius Examples">
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Button Radius Variants</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button className="h-[32px] rounded-none bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
+                      None
+                    </button>
+                    <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
+                      Small
+                    </button>
+                    <button className="h-[32px] rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
+                      Medium
+                    </button>
+                    <button className="h-[32px] rounded-lg bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
+                      Large
+                    </button>
+                    <button className="h-[32px] rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
+                      Full
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Input Radius Variants</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="None"
+                      className="h-[32px] rounded-none border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Small"
+                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Medium"
+                      className="h-[32px] rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Large"
+                      className="h-[32px] rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Full"
+                      className="h-[32px] rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Card Radius Variants</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { radius: "none", label: "None", className: "rounded-none" },
+                      { radius: "small", label: "Small", className: "rounded-sm" },
+                      { radius: "medium", label: "Medium", className: "rounded-md" },
+                      { radius: "large", label: "Large", className: "rounded-lg" },
+                    ].map(({ radius, label, className }) => (
+                      <div
+                        key={radius}
+                        className={`${className} border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 shadow-sm`}
+                      >
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">radius=&quot;{radius}&quot;</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Switch with Different Radius</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[
+                      { radius: "none", className: "rounded-none" },
+                      { radius: "small", className: "rounded-sm" },
+                      { radius: "medium", className: "rounded-md" },
+                      { radius: "large", className: "rounded-lg" },
+                      { radius: "full", className: "rounded-full" },
+                    ].map(({ radius, className }) => (
+                      <div key={radius} className="flex items-center gap-2">
+                        <Switch.Root
+                          className={`${className} w-11 h-6 bg-gray-200 dark:bg-gray-700 data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600 relative transition-colors`}
+                          checked={isSwitchChecked}
+                          onCheckedChange={setIsSwitchChecked}
+                        >
+                          <Switch.Thumb className={`${className} block w-5 h-5 bg-white transition-transform translate-x-0.5 data-[state=checked]:translate-x-[22px] shadow-sm`} />
+                        </Switch.Root>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{radius}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Checkbox with Different Radius</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {[
+                      { radius: "none", className: "rounded-none" },
+                      { radius: "small", className: "rounded-sm" },
+                      { radius: "medium", className: "rounded-md" },
+                      { radius: "large", className: "rounded-lg" },
+                    ].map(({ radius, className }) => (
+                      <div key={radius} className="flex items-center gap-2">
+                        <Checkbox.Root
+                          className={`${className} flex h-5 w-5 items-center justify-center border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 transition-colors`}
+                          checked={checkboxChecked}
+                          onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
+                        >
+                          <Checkbox.Indicator className="text-white">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </Checkbox.Indicator>
+                        </Checkbox.Root>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">{radius}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Scroll Area */}
+            <Card title="Scroll Area">
+              <ScrollArea.Root className="h-40 w-full overflow-hidden rounded-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
+                <ScrollArea.Viewport className="h-full w-full p-4">
+                  <div className="space-y-2">
+                    {Array.from({ length: 20 }).map((_, i) => (
+                      <div key={i} className="text-sm py-1 text-gray-700 dark:text-gray-300">
+                        항목 {i + 1} - 스크롤 가능한 콘텐츠입니다.
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea.Viewport>
+                <ScrollArea.Scrollbar
+                  orientation="vertical"
+                  className="flex touch-none select-none border-l border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 p-0.5 transition-colors"
+                >
+                  <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-400 dark:bg-gray-600 before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:h-full before:min-h-[44px] before:w-full before:min-w-[44px]" />
+                </ScrollArea.Scrollbar>
+              </ScrollArea.Root>
+            </Card>
+
+            {/* Segmented Control */}
+            <Card title="Segmented Control">
+              <div className="flex gap-1 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 p-1">
+                {["전체", "활성", "비활성"].map((label) => (
+                  <button
+                    key={label}
+                    onClick={() => setSegmentedValue(label)}
+                    className={`flex-1 h-[32px] rounded-sm px-3 text-sm font-medium transition-colors ${segmentedValue === label
+                      ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+                      : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                      }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">선택된 값: {segmentedValue}</p>
+            </Card>
+
+            {/* Select */}
+            <Card title="Select">
+              <div className="space-y-4">
+                <Select.Root value={selectValue} onValueChange={setSelectValue}>
+                  <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+                    <Select.Value placeholder="옵션을 선택하세요" className="text-gray-500 dark:text-gray-400" />
+                    <Select.Icon className="text-gray-500 dark:text-gray-400">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Select.Icon>
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
+                      <Select.Viewport>
+                        {["option1", "option2", "option3", "option4"].map((option) => (
+                          <Select.Item
+                            key={option}
+                            value={option}
+                            className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                          >
+                            <Select.ItemText>옵션 {option.slice(-1)}</Select.ItemText>
+                          </Select.Item>
+                        ))}
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+                {selectValue && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">선택된 값: {selectValue}</p>
+                )}
+                <div className="flex flex-col gap-2">
+                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400">
+                    Disabled
+                  </Label.Root>
+                  <Select.Root disabled>
+                    <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 text-sm text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                      <Select.Value placeholder="비활성화된 선택" />
+                      <Select.Icon className="text-gray-400 dark:text-gray-500">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </Select.Icon>
+                    </Select.Trigger>
+                  </Select.Root>
+                </div>
+              </div>
+            </Card>
+
+            {/* Separator */}
+            <Card title="Separator">
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">수평 Separator</p>
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">위쪽 콘텐츠</div>
+                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
+                    <div className="text-sm text-gray-700 dark:text-gray-300">중간 콘텐츠</div>
+                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
+                    <div className="text-sm text-gray-700 dark:text-gray-300">아래쪽 콘텐츠</div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">수직 Separator</p>
+                  <div className="flex items-center gap-2 h-8">
+                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
+                      파일
+                    </button>
+                    <Separator.Root orientation="vertical" className="w-px h-full bg-gray-200 dark:bg-gray-800" />
+                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
+                      편집
+                    </button>
+                    <Separator.Root orientation="vertical" className="w-px h-full bg-gray-200 dark:bg-gray-800" />
+                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
+                      보기
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">텍스트와 함께</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">카테고리</div>
+                    <Separator.Root className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+                    <div className="text-xs text-gray-500 dark:text-gray-400">12개</div>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">두께별 Separator</p>
+                  <div className="space-y-3">
+                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
+                    <Separator.Root className="h-0.5 bg-gray-300 dark:bg-gray-700" />
+                    <Separator.Root className="h-1 bg-gray-400 dark:bg-gray-600" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Skeleton */}
+            <Card title="Skeleton">
+              <div className="space-y-3">
+                <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                <div className="h-4 w-5/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                <div className="h-4 w-4/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                <div className="flex items-center gap-3 mt-4">
+                  <div className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                    <div className="h-4 w-2/3 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Slider */}
+            <Card title="Slider">
+              <div className="space-y-4">
+                <Slider.Root
+                  value={sliderValue}
+                  onValueChange={setSliderValue}
+                  max={100}
+                  step={1}
+                  className="relative flex w-full touch-none select-none items-center"
+                >
+                  <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+                    <Slider.Range className="absolute h-full bg-blue-500 dark:bg-blue-600" />
+                  </Slider.Track>
+                  <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-500 dark:border-blue-600 bg-white dark:bg-gray-900 shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors" />
+                </Slider.Root>
+                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>0</span>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">값: {sliderValue[0]}</span>
+                  <span>100</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Spinner */}
+            <Card title="Spinner">
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">크기별 Spinner</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">색상별 Spinner</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-green-500 dark:border-t-green-600" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-purple-500 dark:border-t-purple-600" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-red-500 dark:border-t-red-600" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-orange-500 dark:border-t-orange-600" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">버튼 내 Spinner</p>
+                  <div className="flex flex-wrap items-center gap-2Label">
+                    <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      <span className="text-sm font-medium">로딩 중...</span>
+                    </button>
+                    <button className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 transition-colors flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 dark:border-gray-400 border-t-transparent" />
+                      <span className="text-sm font-medium">처리 중...</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Switch */}
+            <Card title="Switch">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Label.Root className="text-sm cursor-pointer text-gray-700 dark:text-gray-300">
+                    알림 활성화
+                  </Label.Root>
+                  <Switch.Root
+                    checked={isSwitchChecked}
+                    onCheckedChange={setIsSwitchChecked}
+                    className="h-6 w-11 rounded-full bg-gray-300 dark:bg-gray-700 transition-colors data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
+                  >
+                    <Switch.Thumb className="block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-lg transition-transform will-change-transform data-[state=checked]:translate-x-[22px]" />
+                  </Switch.Root>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  현재 상태: {isSwitchChecked ? "활성화됨" : "비활성화됨"}
+                </p>
+              </div>
+            </Card>
+
+            {/* Table */}
+            <Card title="Table">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-800">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">이름</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">이메일</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">역할</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: "홍길동", email: "hong@example.com", role: "관리자", status: "활성" },
+                      { name: "김철수", email: "kim@example.com", role: "사용자", status: "활성" },
+                      { name: "이영희", email: "lee@example.com", role: "사용자", status: "비활성" },
+                    ].map((row, idx) => (
+                      <tr key={idx} className="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{row.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{row.email}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{row.role}</td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium ${row.status === "활성"
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                            }`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            {/* Tabs */}
+            <Card title="Tabs">
+              <Tabs.Root defaultValue="tab1" className="w-full">
+                <Tabs.List className="flex gap-2 border-b border-gray-200 dark:border-gray-800">
+                  {["tab1", "tab2", "tab3"].map((tab) => (
+                    <Tabs.Trigger
+                      key={tab}
+                      value={tab}
+                      className="rounded-t-lg px-4 py-2 text-sm hover:text-gray-900 dark:hover:text-gray-100 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 dark:data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 text-gray-600 dark:text-gray-400 transition-colors"
+                    >
+                      탭 {tab.slice(-1)}
+                    </Tabs.Trigger>
+                  ))}
+                </Tabs.List>
+                {["tab1", "tab2", "tab3"].map((tab) => (
+                  <Tabs.Content key={tab} value={tab} className="mt-2 p-2 text-sm text-gray-700 dark:text-gray-300">
+                    탭 {tab.slice(-1)}의 콘텐츠입니다.
+                  </Tabs.Content>
+                ))}
+              </Tabs.Root>
+            </Card>
+
+            {/* Text Area */}
+            <Card title="Text Area">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-default" className="text-xs text-gray-500 dark:text-gray-400">
+                    기본 Text Area
+                  </Label.Root>
+                  <textarea
+                    id="textarea-default"
+                    placeholder="메시지를 입력하세요..."
+                    rows={4}
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+                  />
+                  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                    <span>최소 10자 이상 입력하세요</span>
+                    <span>0 / 500</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-readonly" className="text-xs text-gray-500 dark:text-gray-400">
+                    Readonly
+                  </Label.Root>
+                  <textarea
+                    id="textarea-readonly"
+                    value="읽기 전용 텍스트 영역입니다. 이 내용은 수정할 수 없습니다."
+                    rows={4}
+                    readOnly
+                    aria-label="읽기 전용 텍스트 영역"
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 resize-none cursor-not-allowed"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-disabled" className="text-xs text-gray-500 dark:text-gray-400">
+                    Disabled
+                  </Label.Root>
+                  <textarea
+                    id="textarea-disabled"
+                    placeholder="비활성화된 텍스트 영역"
+                    rows={4}
+                    disabled
+                    aria-label="비활성화된 텍스트 영역"
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-400 dark:text-gray-500 placeholder-gray-300 dark:placeholder-gray-600 resize-none cursor-not-allowed"
+                  />
                 </div>
               </div>
             </Card>
@@ -2277,886 +3892,6 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Autocomplete */}
-            <Card title="Autocomplete">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="autocomplete" className="text-xs text-gray-500 dark:text-gray-400">
-                    기본 Autocomplete
-                  </Label.Root>
-                  <Popover.Root
-                    open={autocompleteOpen}
-                    onOpenChange={setAutocompleteOpen}
-                  >
-                    <Popover.Anchor asChild>
-                      <div className="relative">
-                        <input
-                          id="autocomplete"
-                          type="text"
-                          placeholder="기술 스택을 검색하세요"
-                          value={autocompleteValue}
-                          onChange={(e) => {
-                            setAutocompleteValue(e.target.value);
-                            setAutocompleteOpen(true);
-                          }}
-                          onFocus={() => {
-                            setAutocompleteOpen(true);
-                          }}
-                          className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-4 pr-10 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                        />
-                        {autocompleteValue && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setAutocompleteValue("");
-                              setSelectedAutocompleteItem(null);
-                              setAutocompleteOpen(false);
-                            }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
-                            aria-label="삭제"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        )}
-                        {selectedAutocompleteItem && (
-                          <div className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
-                            선택됨
-                          </div>
-                        )}
-                      </div>
-                    </Popover.Anchor>
-                    {autocompleteOpen && autocompleteFilteredItems.length > 0 && (
-                      <Popover.Content
-                        side="bottom"
-                        align="start"
-                        sideOffset={4}
-                        onOpenAutoFocus={(e) => e.preventDefault()}
-                        onInteractOutside={(e) => {
-                          // 입력 필드나 팝오버 내부 클릭이 아닌 경우에만 닫기
-                          const target = e.target as HTMLElement;
-                          const isInput = target.id === 'autocomplete' || target.closest('[id="autocomplete"]');
-                          const isPopoverContent = target.closest('[data-radix-popover-content]');
-
-                          if (!isInput && !isPopoverContent) {
-                            setAutocompleteOpen(false);
-                          } else {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
-                      >
-                        <ScrollArea.Root className="w-full">
-                          <ScrollArea.Viewport className="w-full">
-                            <div className="py-1">
-                              {autocompleteFilteredItems.map((item, index) => {
-                                const isCustomItem = index === 0 && !sampleItems.includes(item);
-                                return (
-                                  <button
-                                    key={`${item}-${index}`}
-                                    type="button"
-                                    onMouseDown={(e) => {
-                                      e.preventDefault(); // 포커스가 input에서 벗어나지 않도록
-                                    }}
-                                    onClick={() => {
-                                      setAutocompleteValue(item);
-                                      setSelectedAutocompleteItem(item);
-                                      setAutocompleteOpen(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedAutocompleteItem === item
-                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
-                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                      }`}
-                                  >
-                                    {isCustomItem && (
-                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
-                                    )}
-                                    {item}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </ScrollArea.Viewport>
-                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
-                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
-                          </ScrollArea.Scrollbar>
-                        </ScrollArea.Root>
-                      </Popover.Content>
-                    )}
-                  </Popover.Root>
-                  {selectedAutocompleteItem && (
-                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">선택된 항목:</p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedAutocompleteItem}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Multi Autocomplete */}
-            <Card title="Multi Autocomplete">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
-                    멀티 선택 Autocomplete (Chip 형태)
-                  </Label.Root>
-                  <Popover.Root
-                    open={multiAutocompleteOpen}
-                    onOpenChange={setMultiAutocompleteOpen}
-                  >
-                    <Popover.Anchor asChild>
-                      <div className="relative min-h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent flex flex-wrap gap-1 items-center">
-                        {/* 선택된 항목들 (Chip) */}
-                        {selectedMultiAutocompleteItems.map((item, index) => (
-                          <div
-                            key={`${item}-${index}`}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-blue-500 dark:bg-blue-600 text-white text-sm"
-                          >
-                            <span>{item}</span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setSelectedMultiAutocompleteItems(prev =>
-                                  prev.filter(selectedItem => selectedItem !== item)
-                                );
-                                setMultiAutocompleteOpen(true);
-                              }}
-                              className="hover:bg-blue-600 dark:hover:bg-blue-700 rounded-sm p-0.5 transition-colors"
-                              aria-label={`${item} 제거`}
-                            >
-                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                        {/* 입력 필드 */}
-                        <input
-                          id="multiautocomplete"
-                          type="text"
-                          placeholder={selectedMultiAutocompleteItems.length === 0 ? "기술 스택을 검색하세요" : ""}
-                          value={multiAutocompleteValue}
-                          onChange={(e) => {
-                            setMultiAutocompleteValue(e.target.value);
-                            setMultiAutocompleteOpen(true);
-                          }}
-                          onFocus={() => {
-                            setMultiAutocompleteOpen(true);
-                          }}
-                          className="flex-1 min-w-[120px] h-[24px] bg-transparent text-sm text-left focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                        />
-                      </div>
-                    </Popover.Anchor>
-                    {multiAutocompleteOpen && multiAutocompleteFilteredItems.length > 0 && (
-                      <Popover.Content
-                        side="bottom"
-                        align="start"
-                        sideOffset={4}
-                        onOpenAutoFocus={(e) => e.preventDefault()}
-                        onInteractOutside={(e) => {
-                          const target = e.target as HTMLElement;
-                          const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
-                          const isPopoverContent = target.closest('[data-radix-popover-content]');
-
-                          if (!isInput && !isPopoverContent) {
-                            setMultiAutocompleteOpen(false);
-                          } else {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
-                      >
-                        <ScrollArea.Root className="w-full">
-                          <ScrollArea.Viewport className="w-full">
-                            <div className="py-1">
-                              {multiAutocompleteFilteredItems.map((item, index) => {
-                                const isCustomItem = index === 0 && !sampleItems.includes(item);
-                                return (
-                                  <button
-                                    key={`${item}-${index}`}
-                                    type="button"
-                                    onMouseDown={(e) => {
-                                      e.preventDefault();
-                                    }}
-                                    onClick={() => {
-                                      if (!selectedMultiAutocompleteItems.includes(item)) {
-                                        setSelectedMultiAutocompleteItems(prev => [...prev, item]);
-                                        setMultiAutocompleteValue("");
-                                        setMultiAutocompleteOpen(true);
-                                      }
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedMultiAutocompleteItems.includes(item)
-                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
-                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                      }`}
-                                  >
-                                    {isCustomItem && (
-                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
-                                    )}
-                                    {item}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </ScrollArea.Viewport>
-                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
-                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
-                          </ScrollArea.Scrollbar>
-                        </ScrollArea.Root>
-                      </Popover.Content>
-                    )}
-                  </Popover.Root>
-                  {selectedMultiAutocompleteItems.length > 0 && (
-                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                        선택된 항목 ({selectedMultiAutocompleteItems.length}개):
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedMultiAutocompleteItems.map((item, index) => (
-                          <span
-                            key={`${item}-${index}`}
-                            className="text-xs px-2 py-1 rounded-sm bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
-              <LazyDatePickerSection
-                selectedDate={selectedDate}
-                tempSelectedDate={tempSelectedDate}
-                datePickerOpen={datePickerOpen}
-                setDatePickerOpen={setDatePickerOpen}
-                setTempSelectedDate={setTempSelectedDate}
-                handleDateSelect={handleDateSelect}
-                handleDateConfirm={handleDateConfirm}
-                handleDateCancel={handleDateCancel}
-              />
-            </React.Suspense>
-
-            {/* DateTime Picker */}
-            <Card title="DateTime Picker">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="datetimepicker" className="text-xs text-gray-500 dark:text-gray-400">
-                    날짜 및 시간 선택
-                  </Label.Root>
-                  <Popover.Root
-                    open={dateTimePickerOpen}
-                    onOpenChange={(open) => {
-                      setDateTimePickerOpen(open);
-                      if (open) {
-                        // 팝오버가 열릴 때 현재 선택된 날짜와 시간을 임시 상태로 복사
-                        setTempSelectedDateTime(selectedDateTime);
-                      }
-                    }}
-                  >
-                    <Popover.Trigger asChild>
-                      <button
-                        id="datetimepicker"
-                        className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <span className={selectedDateTime ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
-                          {selectedDateTime ? format(selectedDateTime, "yyyy년 MM월 dd일 HH:mm", { locale: ko }) : "날짜와 시간을 선택하세요"}
-                        </span>
-                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    </Popover.Trigger>
-                    <Popover.Portal>
-                      <Popover.Content
-                        className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-xl z-50"
-                        align="start"
-                      >
-                        <div className="space-y-4">
-                          <DayPicker
-                            mode="single"
-                            selected={tempSelectedDateTime}
-                            onSelect={handleDateTimeSelect}
-                            locale={ko}
-                            navLayout="around"
-                            className="rdp"
-                            modifiers={{
-                              sunday: (date) => date.getDay() === 0,
-                              saturday: (date) => date.getDay() === 6,
-                            }}
-                            modifiersClassNames={{
-                              sunday: "rdp-day-sunday",
-                              saturday: "rdp-day-saturday",
-                            }}
-                            classNames={{
-                              months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                              month: "space-y-4",
-                              caption: "flex flex-row justify-between items-center pt-1 relative",
-                              caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
-                              nav: "flex items-center gap-1",
-                              nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
-                              nav_button_previous: "",
-                              nav_button_next: "",
-                              table: "w-full border-collapse space-y-1",
-                              head_row: "flex",
-                              head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
-                              row: "flex w-full mt-2",
-                              cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
-                              day_selected: "font-medium bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
-                              day_today: "text-sm bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
-                              day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
-                              day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                              day_range_middle: "font-medium aria-selected:bg-gray-100 dark:aria-selected:bg-gray-800 aria-selected:text-gray-900 dark:aria-selected:text-gray-100",
-                              day_hidden: "invisible",
-                            }}
-                          />
-                          <div className="border-t border-gray-200 dark:border-gray-800 pt-3">
-                            <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-2 block">
-                              시간 선택
-                            </Label.Root>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                min="0"
-                                max="23"
-                                value={timeValue.hours}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val === "" || (parseInt(val) >= 0 && parseInt(val) <= 23)) {
-                                    setTimeValue({ ...timeValue, hours: val });
-                                  }
-                                }}
-                                className="h-[32px] w-16 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100"
-                                placeholder="00"
-                              />
-                              <span className="text-gray-500 dark:text-gray-400">:</span>
-                              <input
-                                type="number"
-                                min="0"
-                                max="59"
-                                value={timeValue.minutes}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val === "" || (parseInt(val) >= 0 && parseInt(val) <= 59)) {
-                                    setTimeValue({ ...timeValue, minutes: val });
-                                  }
-                                }}
-                                className="h-[32px] w-16 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100"
-                                placeholder="00"
-                              />
-                              <button
-                                onClick={() => {
-                                  if (tempSelectedDateTime) {
-                                    const hours = timeValue.hours.padStart(2, "0");
-                                    const minutes = timeValue.minutes.padStart(2, "0");
-                                    const newDate = new Date(tempSelectedDateTime);
-                                    newDate.setHours(parseInt(hours), parseInt(minutes));
-                                    setTempSelectedDateTime(newDate);
-                                    // 시간 적용 시 바로 저장 및 팝오버 닫기
-                                    setSelectedDateTime(newDate);
-                                    setDateTimePickerOpen(false);
-                                  }
-                                }}
-                                className="ml-auto h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-                              >
-                                시간 적용
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </Popover.Content>
-                    </Popover.Portal>
-                  </Popover.Root>
-                </div>
-              </div>
-            </Card>
-
-            {/* Date Range Picker */}
-            <Card title="Date Range Picker">
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="daterangepicker" className="text-xs text-gray-500 dark:text-gray-400">
-                    날짜 범위 선택
-                  </Label.Root>
-                  <Popover.Root
-                    open={dateRangePickerOpen}
-                    onOpenChange={(open) => {
-                      setDateRangePickerOpen(open);
-                      if (open) {
-                        // 팝오버가 열릴 때 현재 선택된 날짜 범위를 임시 상태로 복사
-                        setTempSelectedDateRange(selectedDateRange);
-                      }
-                    }}
-                  >
-                    <Popover.Trigger asChild>
-                      <button
-                        id="daterangepicker"
-                        className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <span className={selectedDateRange.from && selectedDateRange.to ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
-                          {selectedDateRange.from && selectedDateRange.to
-                            ? `${format(selectedDateRange.from, "yyyy년 MM월 dd일", { locale: ko })} - ${format(selectedDateRange.to, "yyyy년 MM월 dd일", { locale: ko })}`
-                            : "날짜 범위를 선택하세요"}
-                        </span>
-                        <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    </Popover.Trigger>
-                    <Popover.Portal>
-                      <Popover.Content
-                        className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 shadow-xl z-50"
-                        align="start"
-                      >
-                        <DayPicker
-                          mode="range"
-                          selected={tempSelectedDateRange}
-                          onSelect={handleDateRangeSelect}
-                          locale={ko}
-                          numberOfMonths={2}
-                          navLayout="around"
-                          className="rdp"
-                          modifiers={{
-                            sunday: (date) => date.getDay() === 0,
-                            saturday: (date) => date.getDay() === 6,
-                          }}
-                          modifiersClassNames={{
-                            sunday: "rdp-day-sunday",
-                            saturday: "rdp-day-saturday",
-                          }}
-                          classNames={{
-                            months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                            month: "space-y-4",
-                            caption: "flex flex-row justify-between items-center pt-1 relative",
-                            caption_label: "font-medium text-gray-900 dark:text-gray-100 flex items-center",
-                            nav: "flex items-center gap-1",
-                            nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100",
-                            nav_button_previous: "",
-                            nav_button_next: "",
-                            table: "w-full border-collapse space-y-1",
-                            head_row: "flex",
-                            head_cell: "text-gray-500 dark:text-gray-100 rounded-md w-9 font-normal text-xs",
-                            row: "flex w-full mt-2",
-                            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-blue-50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                            day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-900 dark:text-gray-100 text-[13px]",
-                            day_selected: "font-normal bg-blue-500 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
-                            day_range_start: "font-normal bg-blue-500 text-white rounded-l-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
-                            day_range_end: "font-normal bg-blue-500 text-white rounded-r-md hover:bg-blue-600 hover:text-white focus:bg-blue-500 focus:text-white",
-                            day_range_middle: "font-normal aria-selected:bg-blue-50 aria-selected:text-gray-900",
-                            day_today: "bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100",
-                            day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
-                            day_disabled: "text-gray-300 dark:text-gray-600 opacity-50",
-                            day_hidden: "invisible",
-                          }}
-                        />
-                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-                          <button
-                            onClick={handleDateRangeCancel}
-                            className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-                          >
-                            취소
-                          </button>
-                          <button
-                            onClick={handleDateRangeConfirm}
-                            className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm font-medium text-white transition-colors"
-                          >
-                            확인
-                          </button>
-                        </div>
-                      </Popover.Content>
-                    </Popover.Portal>
-                  </Popover.Root>
-                </div>
-              </div>
-            </Card>
-
-
-            {/* Menubar */}
-            <Card title="Menubar">
-              <Menubar.Root className="flex gap-1 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-1">
-                <Menubar.Menu>
-                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
-                    파일
-                  </Menubar.Trigger>
-                  <Menubar.Portal>
-                    <Menubar.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
-                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
-                        새로 만들기
-                      </Menubar.Item>
-                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
-                        열기
-                      </Menubar.Item>
-                      <Menubar.Separator className="my-1 h-px bg-gray-200 dark:bg-gray-800" />
-                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
-                        저장
-                      </Menubar.Item>
-                    </Menubar.Content>
-                  </Menubar.Portal>
-                </Menubar.Menu>
-                <Menubar.Menu>
-                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
-                    편집
-                  </Menubar.Trigger>
-                  <Menubar.Portal>
-                    <Menubar.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
-                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
-                        실행 취소
-                      </Menubar.Item>
-                      <Menubar.Item className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300">
-                        다시 실행
-                      </Menubar.Item>
-                    </Menubar.Content>
-                  </Menubar.Portal>
-                </Menubar.Menu>
-                <Menubar.Menu>
-                  <Menubar.Trigger className="rounded px-3 py-1.5 text-sm hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
-                    보기
-                  </Menubar.Trigger>
-                </Menubar.Menu>
-              </Menubar.Root>
-            </Card>
-
-            {/* Navigation Menu */}
-            <Card title="Navigation Menu">
-              <NavigationMenu.Root className="relative">
-                <NavigationMenu.List className="flex gap-2 flex-wrap items-center">
-                  <NavigationMenu.Item>
-                    <NavigationMenu.Link
-                      href="#"
-                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                    >
-                      홈
-                    </NavigationMenu.Link>
-                  </NavigationMenu.Item>
-                  <NavigationMenu.Item>
-                    <NavigationMenu.Link
-                      href="#"
-                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                    >
-                      소개
-                    </NavigationMenu.Link>
-                  </NavigationMenu.Item>
-                  <NavigationMenu.Item>
-                    <NavigationMenu.Trigger className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
-                      제품
-                    </NavigationMenu.Trigger>
-                    <NavigationMenu.Content className="w-48 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 shadow-xl">
-                      <NavigationMenu.Link
-                        href="#"
-                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                      >
-                        제품 1
-                      </NavigationMenu.Link>
-                      <NavigationMenu.Link
-                        href="#"
-                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                      >
-                        제품 2
-                      </NavigationMenu.Link>
-                      <NavigationMenu.Link
-                        href="#"
-                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                      >
-                        제품 3
-                      </NavigationMenu.Link>
-                    </NavigationMenu.Content>
-                  </NavigationMenu.Item>
-                  <NavigationMenu.Item>
-                    <NavigationMenu.Link
-                      href="#"
-                      className="inline-flex h-[32px] items-center rounded-sm px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
-                    >
-                      연락처
-                    </NavigationMenu.Link>
-                  </NavigationMenu.Item>
-                </NavigationMenu.List>
-                <div className="absolute left-0 top-full mt-2 w-full">
-                  <NavigationMenu.Viewport className="relative w-full origin-top-center transition-all duration-300 z-50" />
-                </div>
-              </NavigationMenu.Root>
-            </Card>
-
-            {/* Popover */}
-            <Card title="Popover">
-              <Popover.Root open={popoverOpen} onOpenChange={setPopoverOpen}>
-                <Popover.Trigger asChild>
-                  <button className="w-full h-[32px] rounded-sm bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 px-4 text-sm font-medium text-white transition-colors shadow-sm shadow-green-500/20 dark:shadow-green-600/20">
-                    팝오버 열기
-                  </button>
-                </Popover.Trigger>
-                <Popover.Portal>
-                  <Popover.Content
-                    sideOffset={5}
-                    className="w-64 rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 shadow-xl z-50"
-                  >
-                    <Popover.Arrow className="fill-white dark:fill-gray-900" />
-                    <h4 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">팝오버 제목</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      이것은 팝오버 콘텐츠입니다. 버튼을 클릭하면 표시됩니다.
-                    </p>
-                    <Popover.Close asChild>
-                      <button className="w-full h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors">
-                        닫기
-                      </button>
-                    </Popover.Close>
-                  </Popover.Content>
-                </Popover.Portal>
-              </Popover.Root>
-            </Card>
-
-            {/* Progress */}
-            <Card title="Progress">
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-700 dark:text-gray-300">진행률</span>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">{progress}%</span>
-                  </div>
-                  <Progress.Root
-                    value={progress}
-                    className="h-3 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800 shadow-inner"
-                  >
-                    <Progress.Indicator
-                      className="h-full bg-blue-500 dark:bg-blue-600 transition-all duration-300 shadow-sm"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </Progress.Root>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setProgress(Math.max(0, progress - 10))}
-                    className="flex-1 h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors"
-                  >
-                    -10%
-                  </button>
-                  <button
-                    onClick={() => setProgress(Math.min(100, progress + 10))}
-                    className="flex-1 h-[32px] rounded-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 px-3 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors"
-                  >
-                    +10%
-                  </button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Radio Group */}
-            <Card title="Radio Group">
-              <RadioGroup.Root value={radioValue} onValueChange={setRadioValue}>
-                <div className="flex flex-col gap-3">
-                  {["option1", "option2", "option3"].map((option) => (
-                    <div key={option} className="flex items-center gap-3">
-                      <RadioGroup.Item
-                        value={option}
-                        id={option}
-                        className="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 bg-white dark:bg-gray-900 transition-colors"
-                      >
-                        <RadioGroup.Indicator className="flex items-center justify-center">
-                          <div className="h-3 w-3 rounded-full bg-blue-500 dark:bg-blue-600" />
-                        </RadioGroup.Indicator>
-                      </RadioGroup.Item>
-                      <Label.Root htmlFor={option} className="text-sm cursor-pointer text-gray-700 dark:text-gray-300">
-                        옵션 {option.slice(-1)}
-                      </Label.Root>
-                    </div>
-                  ))}
-                </div>
-              </RadioGroup.Root>
-            </Card>
-
-            {/* Scroll Area */}
-            <Card title="Scroll Area">
-              <ScrollArea.Root className="h-40 w-full overflow-hidden rounded-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
-                <ScrollArea.Viewport className="h-full w-full p-4">
-                  <div className="space-y-2">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={i} className="text-sm py-1 text-gray-700 dark:text-gray-300">
-                        항목 {i + 1} - 스크롤 가능한 콘텐츠입니다.
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea.Viewport>
-                <ScrollArea.Scrollbar
-                  orientation="vertical"
-                  className="flex touch-none select-none border-l border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 p-0.5 transition-colors"
-                >
-                  <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-400 dark:bg-gray-600 before:absolute before:left-1/2 before:top-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:h-full before:min-h-[44px] before:w-full before:min-w-[44px]" />
-                </ScrollArea.Scrollbar>
-              </ScrollArea.Root>
-            </Card>
-
-            {/* Select */}
-            <Card title="Select">
-              <div className="space-y-4">
-                <Select.Root value={selectValue} onValueChange={setSelectValue}>
-                  <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                    <Select.Value placeholder="옵션을 선택하세요" className="text-gray-500 dark:text-gray-400" />
-                    <Select.Icon className="text-gray-500 dark:text-gray-400">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </Select.Icon>
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
-                      <Select.Viewport>
-                        {["option1", "option2", "option3", "option4"].map((option) => (
-                          <Select.Item
-                            key={option}
-                            value={option}
-                            className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
-                          >
-                            <Select.ItemText>옵션 {option.slice(-1)}</Select.ItemText>
-                          </Select.Item>
-                        ))}
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
-                {selectValue && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">선택된 값: {selectValue}</p>
-                )}
-                <div className="flex flex-col gap-2">
-                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400">
-                    Disabled
-                  </Label.Root>
-                  <Select.Root disabled>
-                    <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 text-sm text-gray-400 dark:text-gray-500 cursor-not-allowed">
-                      <Select.Value placeholder="비활성화된 선택" />
-                      <Select.Icon className="text-gray-400 dark:text-gray-500">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </Select.Icon>
-                    </Select.Trigger>
-                  </Select.Root>
-                </div>
-              </div>
-            </Card>
-
-            {/* Separator */}
-            <Card title="Separator">
-              <div className="space-y-6">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">수평 Separator</p>
-                  <div className="space-y-4">
-                    <div className="text-sm text-gray-700 dark:text-gray-300">위쪽 콘텐츠</div>
-                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
-                    <div className="text-sm text-gray-700 dark:text-gray-300">중간 콘텐츠</div>
-                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
-                    <div className="text-sm text-gray-700 dark:text-gray-300">아래쪽 콘텐츠</div>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">수직 Separator</p>
-                  <div className="flex items-center gap-4 h-16">
-                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
-                      파일
-                    </button>
-                    <Separator.Root orientation="vertical" className="w-px h-full bg-gray-200 dark:bg-gray-800" />
-                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
-                      편집
-                    </button>
-                    <Separator.Root orientation="vertical" className="w-px h-full bg-gray-200 dark:bg-gray-800" />
-                    <button className="h-[32px] px-4 rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors text-sm font-medium">
-                      보기
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">텍스트와 함께</p>
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm text-gray-700 dark:text-gray-300">카테고리</div>
-                    <Separator.Root className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
-                    <div className="text-xs text-gray-500 dark:text-gray-400">12개</div>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">두께별 Separator</p>
-                  <div className="space-y-3">
-                    <Separator.Root className="h-px bg-gray-200 dark:bg-gray-800" />
-                    <Separator.Root className="h-0.5 bg-gray-300 dark:bg-gray-700" />
-                    <Separator.Root className="h-1 bg-gray-400 dark:bg-gray-600" />
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Slider */}
-            <Card title="Slider">
-              <div className="space-y-4">
-                <Slider.Root
-                  value={sliderValue}
-                  onValueChange={setSliderValue}
-                  max={100}
-                  step={1}
-                  className="relative flex w-full touch-none select-none items-center"
-                >
-                  <Slider.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
-                    <Slider.Range className="absolute h-full bg-blue-500 dark:bg-blue-600" />
-                  </Slider.Track>
-                  <Slider.Thumb className="block h-5 w-5 rounded-full border-2 border-blue-500 dark:border-blue-600 bg-white dark:bg-gray-900 shadow-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors" />
-                </Slider.Root>
-                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>0</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">값: {sliderValue[0]}</span>
-                  <span>100</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Switch */}
-            <Card title="Switch">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <Label.Root className="text-sm cursor-pointer text-gray-700 dark:text-gray-300">
-                    알림 활성화
-                  </Label.Root>
-                  <Switch.Root
-                    checked={isSwitchChecked}
-                    onCheckedChange={setIsSwitchChecked}
-                    className="h-6 w-11 rounded-full bg-gray-300 dark:bg-gray-700 transition-colors data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
-                  >
-                    <Switch.Thumb className="block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow-lg transition-transform will-change-transform data-[state=checked]:translate-x-[22px]" />
-                  </Switch.Root>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  현재 상태: {isSwitchChecked ? "활성화됨" : "비활성화됨"}
-                </p>
-              </div>
-            </Card>
-
-            {/* Tabs */}
-            <Card title="Tabs">
-              <Tabs.Root defaultValue="tab1" className="w-full">
-                <Tabs.List className="flex gap-2 border-b border-gray-200 dark:border-gray-800">
-                  {["tab1", "tab2", "tab3"].map((tab) => (
-                    <Tabs.Trigger
-                      key={tab}
-                      value={tab}
-                      className="rounded-t-lg px-4 py-2 text-sm hover:text-gray-900 dark:hover:text-gray-100 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 dark:data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 text-gray-600 dark:text-gray-400 transition-colors"
-                    >
-                      탭 {tab.slice(-1)}
-                    </Tabs.Trigger>
-                  ))}
-                </Tabs.List>
-                {["tab1", "tab2", "tab3"].map((tab) => (
-                  <Tabs.Content key={tab} value={tab} className="mt-2 p-2 text-sm text-gray-700 dark:text-gray-300">
-                    탭 {tab.slice(-1)}의 콘텐츠입니다.
-                  </Tabs.Content>
-                ))}
-              </Tabs.Root>
-            </Card>
-
             {/* Toast */}
             <Card title="Toast">
               <button
@@ -3245,7 +3980,7 @@ export default function Dashboard() {
                   <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
                     방향별 Tooltip
                   </Label.Root>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-2">
                     {[
                       { side: "top" as const, label: "위쪽", icon: "↑" },
                       { side: "bottom" as const, label: "아래쪽", icon: "↓" },
@@ -3281,7 +4016,7 @@ export default function Dashboard() {
                   <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
                     다양한 트리거 요소
                   </Label.Root>
-                  <div className="flex flex-wrap items-center gap-6">
+                  <div className="flex flex-wrap items-center gap-2">
                     {/* 버튼 */}
                     <Tooltip.Provider>
                       <Tooltip.Root>
@@ -3378,7 +4113,7 @@ export default function Dashboard() {
                   <Label.Root className="text-xs text-gray-500 dark:text-gray-400 mb-4 block">
                     Tooltip 옵션
                   </Label.Root>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-2">
                     {/* 빠른 표시 (delayDuration 짧게) */}
                     <Tooltip.Provider delayDuration={0}>
                       <Tooltip.Root>
@@ -3445,597 +4180,11 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* No Data */}
-            <Card title="No Data">
-              <div className="space-y-6">
-                {/* 빈 테이블 예시 */}
-                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">데이터 목록</h3>
-                      <Tooltip.Provider>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <button
-                              aria-label="데이터 없음 안내"
-                              className="h-[24px] w-[24px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
-                            >
-                              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                            </button>
-                          </Tooltip.Trigger>
-                          <Tooltip.Portal>
-                            <Tooltip.Content
-                              side="left"
-                              sideOffset={5}
-                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
-                            >
-                              현재 등록된 데이터가 없습니다. 새로 추가하려면 상단의 추가 버튼을 클릭하세요.
-                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
-                            </Tooltip.Content>
-                          </Tooltip.Portal>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </div>
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <svg className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                      </svg>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">데이터가 없습니다</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">새로운 데이터를 추가해보세요</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 빈 리스트 예시 */}
-                <div className="border border-gray-200 dark:border-gray-800 rounded-sm">
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">검색 결과</h3>
-                    </div>
-                    <div className="flex items-center gap-2 py-8 text-center justify-center">
-                      <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">검색 결과가 없습니다</span>
-                      <Tooltip.Provider>
-                        <Tooltip.Root>
-                          <Tooltip.Trigger asChild>
-                            <button
-                              aria-label="검색 결과 없음 안내"
-                              className="h-[20px] w-[20px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                            </button>
-                          </Tooltip.Trigger>
-                          <Tooltip.Portal>
-                            <Tooltip.Content
-                              side="top"
-                              sideOffset={5}
-                              className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
-                            >
-                              다른 검색어를 사용하거나 필터 조건을 변경해보세요.
-                              <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
-                            </Tooltip.Content>
-                          </Tooltip.Portal>
-                        </Tooltip.Root>
-                      </Tooltip.Provider>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 빈 카드 예시 */}
-                <div className="grid gap-6">
-                  {[
-                    { title: "저장된 항목", count: 0, icon: "📁" },
-                    { title: "즐겨찾기", count: 0, icon: "⭐" },
-                  ].map((item, index) => (
-                    <div key={index} className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
-                        <Tooltip.Provider>
-                          <Tooltip.Root>
-                            <Tooltip.Trigger asChild>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-400 dark:text-gray-500">({item.count})</span>
-                                <button
-                                  aria-label={`${item.title} 안내`}
-                                  className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
-                                >
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </Tooltip.Trigger>
-                            <Tooltip.Portal>
-                              <Tooltip.Content
-                                side="top"
-                                sideOffset={5}
-                                className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
-                              >
-                                {item.title}에 저장된 항목이 없습니다. 항목을 추가하면 여기에 표시됩니다.
-                                <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
-                              </Tooltip.Content>
-                            </Tooltip.Portal>
-                          </Tooltip.Root>
-                        </Tooltip.Provider>
-                      </div>
-                      <div className="flex flex-col items-center justify-center py-6">
-                        <span className="text-2xl mb-2">{item.icon}</span>
-                        <span className="text-xs text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* 인라인 빈 상태 예시 */}
-                <div className="border border-gray-200 dark:border-gray-800 rounded-sm p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">상태:</span>
-                    <span className="text-sm text-gray-400 dark:text-gray-500">데이터가 없습니다</span>
-                    <Tooltip.Provider>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <button
-                            aria-label="상태 안내"
-                            className="h-[16px] w-[16px] rounded-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center justify-center transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </button>
-                        </Tooltip.Trigger>
-                        <Tooltip.Portal>
-                          <Tooltip.Content
-                            side="right"
-                            sideOffset={5}
-                            className="rounded-sm bg-gray-900 dark:bg-gray-800 px-3 py-2 text-sm text-white shadow-lg z-50 max-w-xs"
-                          >
-                            이 섹션에 표시할 데이터가 없습니다. 데이터를 추가하면 자동으로 표시됩니다.
-                            <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-800" />
-                          </Tooltip.Content>
-                        </Tooltip.Portal>
-                      </Tooltip.Root>
-                    </Tooltip.Provider>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Radius Examples */}
-            <Card title="Radius Examples">
-              <div className="space-y-6">
-                <div>
-                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Button Radius Variants</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button className="h-[32px] rounded-none bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
-                      None
-                    </button>
-                    <button className="h-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
-                      Small
-                    </button>
-                    <button className="h-[32px] rounded-md bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
-                      Medium
-                    </button>
-                    <button className="h-[32px] rounded-lg bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
-                      Large
-                    </button>
-                    <button className="h-[32px] rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 text-sm font-medium text-white transition-colors shadow-sm">
-                      Full
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Input Radius Variants</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <input
-                      type="text"
-                      placeholder="None"
-                      className="h-[32px] rounded-none border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Small"
-                      className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Medium"
-                      className="h-[32px] rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Large"
-                      className="h-[32px] rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Full"
-                      className="h-[32px] rounded-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Card Radius Variants</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { radius: "none", label: "None", className: "rounded-none" },
-                      { radius: "small", label: "Small", className: "rounded-sm" },
-                      { radius: "medium", label: "Medium", className: "rounded-md" },
-                      { radius: "large", label: "Large", className: "rounded-lg" },
-                    ].map(({ radius, label, className }) => (
-                      <div
-                        key={radius}
-                        className={`${className} border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 shadow-sm`}
-                      >
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">radius=&quot;{radius}&quot;</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Switch with Different Radius</p>
-                  <div className="flex flex-wrap items-center gap-4">
-                    {[
-                      { radius: "none", className: "rounded-none" },
-                      { radius: "small", className: "rounded-sm" },
-                      { radius: "medium", className: "rounded-md" },
-                      { radius: "large", className: "rounded-lg" },
-                      { radius: "full", className: "rounded-full" },
-                    ].map(({ radius, className }) => (
-                      <div key={radius} className="flex items-center gap-2">
-                        <Switch.Root
-                          className={`${className} w-11 h-6 bg-gray-200 dark:bg-gray-700 data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600 relative transition-colors`}
-                          checked={isSwitchChecked}
-                          onCheckedChange={setIsSwitchChecked}
-                        >
-                          <Switch.Thumb className={`${className} block w-5 h-5 bg-white transition-transform translate-x-0.5 data-[state=checked]:translate-x-[22px] shadow-sm`} />
-                        </Switch.Root>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">{radius}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Checkbox with Different Radius</p>
-                  <div className="flex flex-wrap items-center gap-4">
-                    {[
-                      { radius: "none", className: "rounded-none" },
-                      { radius: "small", className: "rounded-sm" },
-                      { radius: "medium", className: "rounded-md" },
-                      { radius: "large", className: "rounded-lg" },
-                    ].map(({ radius, className }) => (
-                      <div key={radius} className="flex items-center gap-2">
-                        <Checkbox.Root
-                          className={`${className} flex h-5 w-5 items-center justify-center border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 transition-colors`}
-                          checked={checkboxChecked}
-                          onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
-                        >
-                          <Checkbox.Indicator className="text-white">
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </Checkbox.Indicator>
-                        </Checkbox.Root>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">{radius}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Badge */}
-            <Card title="Badge">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center rounded-sm bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-200">
-                  기본
-                </span>
-                <span className="inline-flex items-center rounded-sm bg-green-100 dark:bg-green-900/30 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:text-green-200">
-                  성공
-                </span>
-                <span className="inline-flex items-center rounded-sm bg-yellow-100 dark:bg-yellow-900/30 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:text-yellow-200">
-                  경고
-                </span>
-                <span className="inline-flex items-center rounded-sm bg-red-100 dark:bg-red-900/30 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:text-red-200">
-                  오류
-                </span>
-                <span className="inline-flex items-center rounded-sm bg-gray-100 dark:bg-gray-800 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-200">
-                  중립
-                </span>
-                <span className="inline-flex items-center rounded-sm bg-purple-100 dark:bg-purple-900/30 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:text-purple-200">
-                  프리미엄
-                </span>
-              </div>
-            </Card>
-
-            {/* Callout */}
-            <Card title="Callout">
-              <div className="space-y-3">
-                <div className="rounded-sm border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">정보</h4>
-                      <p className="text-sm text-blue-800 dark:text-blue-200">이것은 정보를 전달하는 콜아웃입니다. 중요한 내용이나 팁을 표시할 때 사용합니다.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-sm border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-semibold text-green-900 dark:text-green-100 mb-1">성공</h4>
-                      <p className="text-sm text-green-800 dark:text-green-200">작업이 성공적으로 완료되었습니다.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-sm border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 p-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-1">경고</h4>
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200">주의가 필요한 사항입니다. 이 작업은 되돌릴 수 없을 수 있습니다.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-sm border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-semibold text-red-900 dark:text-red-100 mb-1">오류</h4>
-                      <p className="text-sm text-red-800 dark:text-red-200">오류가 발생했습니다. 다시 시도해주세요.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">중립</h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">일반적인 정보나 알림을 표시합니다.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Button */}
-            <Card title="Button">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">기본 버튼</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium transition-colors">
-                      기본 버튼
-                    </button>
-                    <button className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium transition-colors">
-                      보조 버튼
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Disabled</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button 
-                      disabled
-                      className="h-[32px] px-4 rounded-sm bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
-                    >
-                      비활성화된 버튼
-                    </button>
-                    <button 
-                      disabled
-                      className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-gray-400 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
-                    >
-                      비활성화된 보조 버튼
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Icon Button */}
-            <Card title="Icon Button">
-              <div className="flex flex-wrap items-center gap-3">
-                <button aria-label="추가" className="h-[32px] w-[32px] rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-                <button aria-label="추가" className="h-[32px] w-[32px] rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-                <button aria-label="보기" className="h-[32px] w-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </button>
-                <button aria-label="삭제" className="h-[32px] w-[32px] rounded-sm bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </Card>
-
-            {/* Skeleton */}
-            <Card title="Skeleton">
-              <div className="space-y-3">
-                <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                <div className="h-4 w-5/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                <div className="h-4 w-4/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                <div className="flex items-center gap-3 mt-4">
-                  <div className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                    <div className="h-4 w-2/3 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Spinner */}
-            <Card title="Spinner">
-              <div className="space-y-6">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">크기별 Spinner</p>
-                  <div className="flex flex-wrap items-center gap-6">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">색상별 Spinner</p>
-                  <div className="flex flex-wrap items-center gap-6">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-blue-500 dark:border-t-blue-600" />
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-green-500 dark:border-t-green-600" />
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-purple-500 dark:border-t-purple-600" />
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-red-500 dark:border-t-red-600" />
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-800 border-t-orange-500 dark:border-t-orange-600" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">버튼 내 Spinner</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      <span className="text-sm font-medium">로딩 중...</span>
-                    </button>
-                    <button className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 transition-colors flex items-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 dark:border-gray-400 border-t-transparent" />
-                      <span className="text-sm font-medium">처리 중...</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Text Area */}
-            <Card title="Text Area">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="textarea-default" className="text-xs text-gray-500 dark:text-gray-400">
-                    기본 Text Area
-                  </Label.Root>
-                  <textarea
-                    id="textarea-default"
-                    placeholder="메시지를 입력하세요..."
-                    rows={4}
-                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                  />
-                  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span>최소 10자 이상 입력하세요</span>
-                    <span>0 / 500</span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="textarea-readonly" className="text-xs text-gray-500 dark:text-gray-400">
-                    Readonly
-                  </Label.Root>
-                  <textarea
-                    id="textarea-readonly"
-                    value="읽기 전용 텍스트 영역입니다. 이 내용은 수정할 수 없습니다."
-                    rows={4}
-                    readOnly
-                    aria-label="읽기 전용 텍스트 영역"
-                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 resize-none cursor-not-allowed"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="textarea-disabled" className="text-xs text-gray-500 dark:text-gray-400">
-                    Disabled
-                  </Label.Root>
-                  <textarea
-                    id="textarea-disabled"
-                    placeholder="비활성화된 텍스트 영역"
-                    rows={4}
-                    disabled
-                    aria-label="비활성화된 텍스트 영역"
-                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-400 dark:text-gray-500 placeholder-gray-300 dark:placeholder-gray-600 resize-none cursor-not-allowed"
-                  />
-                </div>
-              </div>
-            </Card>
-
-            {/* Table */}
-            <Card title="Table">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-800">
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">이름</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">이메일</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">역할</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">상태</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { name: "홍길동", email: "hong@example.com", role: "관리자", status: "활성" },
-                      { name: "김철수", email: "kim@example.com", role: "사용자", status: "활성" },
-                      { name: "이영희", email: "lee@example.com", role: "사용자", status: "비활성" },
-                    ].map((row, idx) => (
-                      <tr key={idx} className="border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{row.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{row.email}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{row.role}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span className={`inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium ${row.status === "활성"
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200"
-                            }`}>
-                            {row.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-
-            {/* Segmented Control */}
-            <Card title="Segmented Control">
-              <div className="flex gap-1 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 p-1">
-                {["전체", "활성", "비활성"].map((label) => (
-                  <button
-                    key={label}
-                    onClick={() => setSegmentedValue(label)}
-                    className={`flex-1 h-[32px] rounded-sm px-3 text-sm font-medium transition-colors ${segmentedValue === label
-                      ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
-                      : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-                      }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">선택된 값: {segmentedValue}</p>
+            {/* Typography - Blockquote */}
+            <Card title="Typography - Blockquote">
+              <blockquote className="border-l-4 border-blue-500 dark:border-blue-600 pl-4 italic text-gray-700 dark:text-gray-300">
+                &quot;이것은 인용구입니다. 중요한 내용이나 영감을 주는 문구를 표시할 때 사용합니다.&quot;
+              </blockquote>
             </Card>
 
             {/* Typography - Heading */}
@@ -4064,120 +4213,136 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Typography - Blockquote */}
-            <Card title="Typography - Blockquote">
-              <blockquote className="border-l-4 border-blue-500 dark:border-blue-600 pl-4 italic text-gray-700 dark:text-gray-300">
-                &quot;이것은 인용구입니다. 중요한 내용이나 영감을 주는 문구를 표시할 때 사용합니다.&quot;
-              </blockquote>
-            </Card>
+            {/* Validation */}
+            <Card title="Validation">
+              <div className="space-y-4">
+                {/* 이메일 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="email-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    이메일 주소 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="email-validation"
+                    type="email"
+                    placeholder="email@example.com"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="invalid-email"
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    올바른 이메일 형식이 아닙니다
+                  </p>
+                </div>
 
-            {/* Data List */}
-            <Card title="Data List">
-              <dl className="space-y-3">
-                <div>
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">이름</dt>
-                  <dd className="text-sm text-gray-700 dark:text-gray-300">홍길동</dd>
+                {/* 비밀번호 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="password-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    비밀번호 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="password-validation"
+                    type="password"
+                    placeholder="••••••••"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="123"
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    비밀번호는 최소 8자 이상이어야 합니다
+                  </p>
                 </div>
-                <div>
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">이메일</dt>
-                  <dd className="text-sm text-gray-700 dark:text-gray-300">hong@example.com</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">전화번호</dt>
-                  <dd className="text-sm text-gray-700 dark:text-gray-300">010-1234-5678</dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">주소</dt>
-                  <dd className="text-sm text-gray-700 dark:text-gray-300">서울특별시 강남구</dd>
-                </div>
-              </dl>
-            </Card>
 
-            {/* Radio Cards */}
-            <Card title="Radio Cards">
-              <RadioGroup.Root value={radioValue} onValueChange={setRadioValue} className="space-y-2">
-                {[
-                  { value: "option1", label: "기본 옵션", description: "이것은 기본 옵션입니다" },
-                  { value: "option2", label: "프리미엄 옵션", description: "추가 기능이 포함된 옵션입니다" },
-                  { value: "option3", label: "엔터프라이즈 옵션", description: "모든 기능이 포함된 옵션입니다" },
-                ].map((option) => (
-                  <label
-                    key={option.value}
-                    className={`flex items-start gap-3 rounded-sm border-2 p-3 cursor-pointer transition-all ${radioValue === option.value
-                      ? "border-blue-500 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900"
-                      }`}
-                  >
-                    <RadioGroup.Item
-                      value={option.value}
-                      className="mt-0.5 h-4 w-4 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 data-[state=checked]:border-blue-500 dark:data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-500 dark:data-[state=checked]:bg-blue-600"
-                    >
-                      <RadioGroup.Indicator className="flex items-center justify-center">
-                        <div className="h-2 w-2 rounded-full bg-white" />
-                      </RadioGroup.Indicator>
-                    </RadioGroup.Item>
-                    <div className="flex-1">
-                      <div className={`text-sm font-medium ${radioValue === option.value ? "text-blue-900 dark:text-blue-100" : "text-gray-900 dark:text-gray-100"}`}>
-                        {option.label}
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{option.description}</div>
-                    </div>
-                  </label>
-                ))}
-              </RadioGroup.Root>
-            </Card>
+                {/* 전화번호 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="phone-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    전화번호 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="phone-validation"
+                    type="tel"
+                    placeholder="010-1234-5678"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="123"
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)
+                  </p>
+                </div>
 
-            {/* Checkbox Cards */}
-            <Card title="Checkbox Cards">
-              <div className="space-y-2">
-                {[
-                  { id: "card1", label: "기본 기능", description: "필수 기능들이 포함됩니다", checked: multiCheckboxes.option1 },
-                  { id: "card2", label: "고급 기능", description: "추가 기능들이 포함됩니다", checked: multiCheckboxes.option2 },
-                  { id: "card3", label: "프리미엄 기능", description: "모든 기능이 포함됩니다", checked: multiCheckboxes.option3 },
-                ].map((option, idx) => (
-                  <label
-                    key={option.id}
-                    className={`flex items-start gap-3 rounded-sm border-2 p-3 cursor-pointer transition-all ${option.checked
-                      ? "border-blue-500 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900"
-                      }`}
-                  >
-                    <Checkbox.Root
-                      id={option.id}
-                      checked={option.checked}
-                      onCheckedChange={(checked) =>
-                        setMultiCheckboxes((prev) => ({ ...prev, [`option${idx + 1}`]: checked === true }))
-                      }
-                      className="mt-0.5 flex h-5 w-5 items-center justify-center rounded border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500 transition-colors"
-                    >
-                      <Checkbox.Indicator className="text-white">
+                {/* 이름 검증 에러 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="name-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    이름 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="name-validation"
+                    type="text"
+                    placeholder="홍길동"
+                    className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue=""
+                  />
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    이름을 입력해주세요
+                  </p>
+                </div>
+
+                {/* 성공 상태 예시 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="success-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    사용자명
+                  </Label.Root>
+                  <input
+                    id="success-validation"
+                    type="text"
+                    placeholder="사용자명"
+                    className="h-[32px] rounded-sm border border-green-500 dark:border-green-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                    defaultValue="validuser"
+                  />
+                  <p className="text-xs text-green-500 dark:text-green-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    사용 가능한 사용자명입니다
+                  </p>
+                </div>
+
+                {/* 좌우 배치 - 에러 메시지 */}
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">좌우 배치 (에러)</h3>
+                  <div className="flex items-start gap-2">
+                    <Label.Root htmlFor="email-horizontal-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0 pt-2">
+                      이메일 <span className="text-red-500">*</span>
+                    </Label.Root>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <input
+                        id="email-horizontal-validation"
+                        type="email"
+                        placeholder="email@example.com"
+                        className="h-[32px] rounded-sm border border-red-500 dark:border-red-500 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        defaultValue="wrong-email"
+                      />
+                      <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                      </Checkbox.Indicator>
-                    </Checkbox.Root>
-                    <div className="flex-1">
-                      <div className={`text-sm font-medium ${option.checked ? "text-blue-900 dark:text-blue-100" : "text-gray-900 dark:text-gray-100"}`}>
-                        {option.label}
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{option.description}</div>
+                        올바른 이메일 형식이 아닙니다
+                      </p>
                     </div>
-                  </label>
-                ))}
+                  </div>
+                </div>
               </div>
             </Card>
 
-            {/* Inset */}
-            <Card title="Inset">
-              <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4 flex flex-col gap-2" >
-                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">이것은 Inset 컴포넌트 예시입니다.</p>
-                </div>
-                <div className="rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">내용이 중첩된 컨테이너 안에 표시됩니다.</p>
-                </div>
-              </div>
-            </Card>
           </div>
         </main>
       </Toast.Provider>

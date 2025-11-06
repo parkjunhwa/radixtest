@@ -2,22 +2,20 @@ import * as React from "react";
 import { Card } from "../common/Card";
 import * as Accordion from "@radix-ui/react-accordion";
 
-interface AccordionSectionProps {
-  accordionValue: string;
-  setAccordionValue: (value: string) => void;
-}
+const AccordionSectionComponent = function AccordionSectionComponent() {
+  const [accordionValue, setAccordionValue] = React.useState<string>("");
 
-export const AccordionSection = React.memo(function AccordionSection({
-  accordionValue,
-  setAccordionValue,
-}: AccordionSectionProps) {
+  const handleValueChange = React.useCallback((value: string) => {
+    setAccordionValue(value);
+  }, []);
+
   return (
     <Card title="Accordion">
       <Accordion.Root
         type="single"
         collapsible
         value={accordionValue}
-        onValueChange={setAccordionValue}
+        onValueChange={handleValueChange}
         className="w-full"
       >
         <Accordion.Item value="item-1" className="border-b border-gray-200 dark:border-gray-800">
@@ -57,5 +55,8 @@ export const AccordionSection = React.memo(function AccordionSection({
       </Accordion.Root>
     </Card>
   );
-});
+};
+
+// props가 없으므로 항상 메모이제이션된 컴포넌트 반환
+export const AccordionSection = React.memo(AccordionSectionComponent, () => true);
 
