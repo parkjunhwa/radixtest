@@ -3487,6 +3487,8 @@ export default function Dashboard() {
                     <div className="h-4 w-2/3 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
                   </div>
                 </div>
+                <div className="h-4 w-2/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
+                <div className="h-4 w-5/6 rounded-sm bg-gray-200 dark:bg-gray-800 animate-pulse" />
               </div>
             </Card>
 
@@ -4206,6 +4208,20 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   이것은 <strong>강조된</strong> 텍스트와 <em>기울임</em> 텍스트가 <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded-sm">코드</code>와 함께 있는 예시입니다.
                 </p>
+                <div className="pt-2 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    윗첨자: E=mc<sup>2</sup>, H<sub>2</sub>SO<sub>4</sub>, x<sup>3</sup> + y<sup>2</sup>
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    아래첨자: H<sub>2</sub>O, CO<sub>2</sub>, log<sub>10</sub>
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    특수문자: © 2024, ® 등록상표, ™ 상표, € 100, £ 50, ¥ 1000, § 1, ¶ 1, †, ‡
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    이모지: 😀 🎉 ⭐ 🚀 💡 🎨 ✨ 🔥 💯
+                  </p>
+                </div>
               </div>
             </Card>
 
