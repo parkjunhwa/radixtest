@@ -2249,6 +2249,31 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textfield-readonly" className="text-xs text-gray-500 dark:text-gray-400">
+                    Readonly
+                  </Label.Root>
+                  <input
+                    id="textfield-readonly"
+                    type="text"
+                    value="읽기 전용 텍스트입니다"
+                    readOnly
+                    aria-label="읽기 전용 입력 필드"
+                    className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 text-sm text-left text-gray-900 dark:text-gray-100 cursor-not-allowed"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textfield-disabled" className="text-xs text-gray-500 dark:text-gray-400">
+                    Disabled
+                  </Label.Root>
+                  <input
+                    id="textfield-disabled"
+                    type="text"
+                    placeholder="비활성화된 입력 필드"
+                    disabled
+                    className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 text-sm text-left text-gray-400 dark:text-gray-500 placeholder-gray-300 dark:placeholder-gray-600 cursor-not-allowed"
+                  />
+                </div>
               </div>
             </Card>
 
@@ -2971,34 +2996,51 @@ export default function Dashboard() {
 
             {/* Select */}
             <Card title="Select">
-              <Select.Root value={selectValue} onValueChange={setSelectValue}>
-                <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
-                  <Select.Value placeholder="옵션을 선택하세요" className="text-gray-500 dark:text-gray-400" />
-                  <Select.Icon className="text-gray-500 dark:text-gray-400">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Select.Icon>
-                </Select.Trigger>
-                <Select.Portal>
-                  <Select.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
-                    <Select.Viewport>
-                      {["option1", "option2", "option3", "option4"].map((option) => (
-                        <Select.Item
-                          key={option}
-                          value={option}
-                          className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
-                        >
-                          <Select.ItemText>옵션 {option.slice(-1)}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select.Portal>
-              </Select.Root>
-              {selectValue && (
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">선택된 값: {selectValue}</p>
-              )}
+              <div className="space-y-4">
+                <Select.Root value={selectValue} onValueChange={setSelectValue}>
+                  <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors">
+                    <Select.Value placeholder="옵션을 선택하세요" className="text-gray-500 dark:text-gray-400" />
+                    <Select.Icon className="text-gray-500 dark:text-gray-400">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </Select.Icon>
+                  </Select.Trigger>
+                  <Select.Portal>
+                    <Select.Content className="min-w-[200px] rounded-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl z-50">
+                      <Select.Viewport>
+                        {["option1", "option2", "option3", "option4"].map((option) => (
+                          <Select.Item
+                            key={option}
+                            value={option}
+                            className="rounded px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                          >
+                            <Select.ItemText>옵션 {option.slice(-1)}</Select.ItemText>
+                          </Select.Item>
+                        ))}
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+                {selectValue && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">선택된 값: {selectValue}</p>
+                )}
+                <div className="flex flex-col gap-2">
+                  <Label.Root className="text-xs text-gray-500 dark:text-gray-400">
+                    Disabled
+                  </Label.Root>
+                  <Select.Root disabled>
+                    <Select.Trigger className="flex w-full h-[32px] items-center justify-between rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 text-sm text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                      <Select.Value placeholder="비활성화된 선택" />
+                      <Select.Icon className="text-gray-400 dark:text-gray-500">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </Select.Icon>
+                    </Select.Trigger>
+                  </Select.Root>
+                </div>
+              </div>
             </Card>
 
             {/* Separator */}
@@ -3777,6 +3819,40 @@ export default function Dashboard() {
               </div>
             </Card>
 
+            {/* Button */}
+            <Card title="Button">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">기본 버튼</p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-medium transition-colors">
+                      기본 버튼
+                    </button>
+                    <button className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium transition-colors">
+                      보조 버튼
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Disabled</p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button 
+                      disabled
+                      className="h-[32px] px-4 rounded-sm bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
+                    >
+                      비활성화된 버튼
+                    </button>
+                    <button 
+                      disabled
+                      className="h-[32px] px-4 rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-gray-400 dark:text-gray-500 text-sm font-medium cursor-not-allowed transition-colors"
+                    >
+                      비활성화된 보조 버튼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Icon Button */}
             <Card title="Icon Button">
               <div className="flex flex-wrap items-center gap-3">
@@ -3861,15 +3937,47 @@ export default function Dashboard() {
 
             {/* Text Area */}
             <Card title="Text Area">
-              <div className="flex flex-col gap-2">
-                <textarea
-                  placeholder="메시지를 입력하세요..."
-                  rows={4}
-                  className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                />
-                <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-                  <span>최소 10자 이상 입력하세요</span>
-                  <span>0 / 500</span>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-default" className="text-xs text-gray-500 dark:text-gray-400">
+                    기본 Text Area
+                  </Label.Root>
+                  <textarea
+                    id="textarea-default"
+                    placeholder="메시지를 입력하세요..."
+                    rows={4}
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+                  />
+                  <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                    <span>최소 10자 이상 입력하세요</span>
+                    <span>0 / 500</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-readonly" className="text-xs text-gray-500 dark:text-gray-400">
+                    Readonly
+                  </Label.Root>
+                  <textarea
+                    id="textarea-readonly"
+                    value="읽기 전용 텍스트 영역입니다. 이 내용은 수정할 수 없습니다."
+                    rows={4}
+                    readOnly
+                    aria-label="읽기 전용 텍스트 영역"
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 resize-none cursor-not-allowed"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="textarea-disabled" className="text-xs text-gray-500 dark:text-gray-400">
+                    Disabled
+                  </Label.Root>
+                  <textarea
+                    id="textarea-disabled"
+                    placeholder="비활성화된 텍스트 영역"
+                    rows={4}
+                    disabled
+                    aria-label="비활성화된 텍스트 영역"
+                    className="h-auto w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 px-4 py-2 text-sm text-gray-400 dark:text-gray-500 placeholder-gray-300 dark:placeholder-gray-600 resize-none cursor-not-allowed"
+                  />
                 </div>
               </div>
             </Card>
