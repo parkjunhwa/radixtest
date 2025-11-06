@@ -1732,6 +1732,142 @@ export default function Dashboard() {
               </div>
             </Card>
 
+            {/* Autocomplete Multi */}
+            <Card title="Autocomplete Multi">
+              <div className="space-y-4">
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
+                    멀티 선택 Autocomplete (Chip 형태)
+                  </Label.Root>
+                  <Popover.Root
+                    open={multiAutocompleteOpen}
+                    onOpenChange={setMultiAutocompleteOpen}
+                  >
+                    <Popover.Anchor asChild>
+                      <div className="relative min-h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent flex flex-wrap gap-1 items-center">
+                        {/* 선택된 항목들 (Chip) */}
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <div
+                            key={`${item}-${index}`}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-blue-500 dark:bg-blue-600 text-white text-sm"
+                          >
+                            <span>{item}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSelectedMultiAutocompleteItems(prev =>
+                                  prev.filter(selectedItem => selectedItem !== item)
+                                );
+                                setMultiAutocompleteOpen(true);
+                              }}
+                              className="hover:bg-blue-600 dark:hover:bg-blue-700 rounded-sm p-0.5 transition-colors"
+                              aria-label={`${item} 제거`}
+                            >
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                        {/* 입력 필드 */}
+                        <input
+                          id="multiautocomplete"
+                          type="text"
+                          placeholder={selectedMultiAutocompleteItems.length === 0 ? "기술 스택을 검색하세요" : ""}
+                          value={multiAutocompleteValue}
+                          onChange={(e) => {
+                            setMultiAutocompleteValue(e.target.value);
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          onFocus={() => {
+                            setMultiAutocompleteOpen(true);
+                          }}
+                          className="flex-1 min-w-[120px] h-[24px] bg-transparent text-sm text-left focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                        />
+                      </div>
+                    </Popover.Anchor>
+                    {multiAutocompleteOpen && multiAutocompleteFilteredItems.length > 0 && (
+                      <Popover.Content
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                        onInteractOutside={(e) => {
+                          const target = e.target as HTMLElement;
+                          const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
+                          const isPopoverContent = target.closest('[data-radix-popover-content]');
+
+                          if (!isInput && !isPopoverContent) {
+                            setMultiAutocompleteOpen(false);
+                          } else {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
+                      >
+                        <ScrollArea.Root className="w-full">
+                          <ScrollArea.Viewport className="w-full">
+                            <div className="py-1">
+                              {multiAutocompleteFilteredItems.map((item, index) => {
+                                const isCustomItem = index === 0 && !sampleItems.includes(item);
+                                return (
+                                  <button
+                                    key={`${item}-${index}`}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                    }}
+                                    onClick={() => {
+                                      if (!selectedMultiAutocompleteItems.includes(item)) {
+                                        setSelectedMultiAutocompleteItems(prev => [...prev, item]);
+                                        setMultiAutocompleteValue("");
+                                        setMultiAutocompleteOpen(true);
+                                      }
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedMultiAutocompleteItems.includes(item)
+                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                      }`}
+                                  >
+                                    {isCustomItem && (
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
+                                    )}
+                                    {item}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea.Viewport>
+                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
+                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
+                          </ScrollArea.Scrollbar>
+                        </ScrollArea.Root>
+                      </Popover.Content>
+                    )}
+                  </Popover.Root>
+                  {selectedMultiAutocompleteItems.length > 0 && (
+                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        선택된 항목 ({selectedMultiAutocompleteItems.length}개):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMultiAutocompleteItems.map((item, index) => (
+                          <span
+                            key={`${item}-${index}`}
+                            className="text-xs px-2 py-1 rounded-sm bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
             {/* Avatar */}
             <Card title="Avatar">
               <div className="flex items-center gap-4">
@@ -2731,142 +2867,6 @@ export default function Dashboard() {
               </Menubar.Root>
             </Card>
 
-            {/* Multi Autocomplete */}
-            <Card title="Multi Autocomplete">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2">
-                  <Label.Root htmlFor="multiautocomplete" className="text-xs text-gray-500 dark:text-gray-400">
-                    멀티 선택 Autocomplete (Chip 형태)
-                  </Label.Root>
-                  <Popover.Root
-                    open={multiAutocompleteOpen}
-                    onOpenChange={setMultiAutocompleteOpen}
-                  >
-                    <Popover.Anchor asChild>
-                      <div className="relative min-h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent flex flex-wrap gap-1 items-center">
-                        {/* 선택된 항목들 (Chip) */}
-                        {selectedMultiAutocompleteItems.map((item, index) => (
-                          <div
-                            key={`${item}-${index}`}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-blue-500 dark:bg-blue-600 text-white text-sm"
-                          >
-                            <span>{item}</span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setSelectedMultiAutocompleteItems(prev =>
-                                  prev.filter(selectedItem => selectedItem !== item)
-                                );
-                                setMultiAutocompleteOpen(true);
-                              }}
-                              className="hover:bg-blue-600 dark:hover:bg-blue-700 rounded-sm p-0.5 transition-colors"
-                              aria-label={`${item} 제거`}
-                            >
-                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
-                        {/* 입력 필드 */}
-                        <input
-                          id="multiautocomplete"
-                          type="text"
-                          placeholder={selectedMultiAutocompleteItems.length === 0 ? "기술 스택을 검색하세요" : ""}
-                          value={multiAutocompleteValue}
-                          onChange={(e) => {
-                            setMultiAutocompleteValue(e.target.value);
-                            setMultiAutocompleteOpen(true);
-                          }}
-                          onFocus={() => {
-                            setMultiAutocompleteOpen(true);
-                          }}
-                          className="flex-1 min-w-[120px] h-[24px] bg-transparent text-sm text-left focus:outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                        />
-                      </div>
-                    </Popover.Anchor>
-                    {multiAutocompleteOpen && multiAutocompleteFilteredItems.length > 0 && (
-                      <Popover.Content
-                        side="bottom"
-                        align="start"
-                        sideOffset={4}
-                        onOpenAutoFocus={(e) => e.preventDefault()}
-                        onInteractOutside={(e) => {
-                          const target = e.target as HTMLElement;
-                          const isInput = target.id === 'multiautocomplete' || target.closest('[id="multiautocomplete"]');
-                          const isPopoverContent = target.closest('[data-radix-popover-content]');
-
-                          if (!isInput && !isPopoverContent) {
-                            setMultiAutocompleteOpen(false);
-                          } else {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="z-50 w-(--radix-popover-trigger-width) rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-1 max-h-[200px] overflow-auto"
-                      >
-                        <ScrollArea.Root className="w-full">
-                          <ScrollArea.Viewport className="w-full">
-                            <div className="py-1">
-                              {multiAutocompleteFilteredItems.map((item, index) => {
-                                const isCustomItem = index === 0 && !sampleItems.includes(item);
-                                return (
-                                  <button
-                                    key={`${item}-${index}`}
-                                    type="button"
-                                    onMouseDown={(e) => {
-                                      e.preventDefault();
-                                    }}
-                                    onClick={() => {
-                                      if (!selectedMultiAutocompleteItems.includes(item)) {
-                                        setSelectedMultiAutocompleteItems(prev => [...prev, item]);
-                                        setMultiAutocompleteValue("");
-                                        setMultiAutocompleteOpen(true);
-                                      }
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-sm rounded-sm transition-colors ${selectedMultiAutocompleteItems.includes(item)
-                                      ? "bg-blue-500 dark:bg-blue-600 text-white"
-                                      : "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                                      }`}
-                                  >
-                                    {isCustomItem && (
-                                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">(새 항목)</span>
-                                    )}
-                                    {item}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </ScrollArea.Viewport>
-                          <ScrollArea.Scrollbar orientation="vertical" className="flex touch-none select-none transition-colors duration-150 ease-out data-[orientation=vertical]:w-2.5 data-[orientation=vertical]:h-full">
-                            <ScrollArea.Thumb className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
-                          </ScrollArea.Scrollbar>
-                        </ScrollArea.Root>
-                      </Popover.Content>
-                    )}
-                  </Popover.Root>
-                  {selectedMultiAutocompleteItems.length > 0 && (
-                    <div className="mt-2 p-3 rounded-sm border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                        선택된 항목 ({selectedMultiAutocompleteItems.length}개):
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedMultiAutocompleteItems.map((item, index) => (
-                          <span
-                            key={`${item}-${index}`}
-                            className="text-xs px-2 py-1 rounded-sm bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-
             {/* Navigation Menu */}
             <Card title="Navigation Menu">
               <NavigationMenu.Root className="relative">
@@ -3808,20 +3808,24 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label.Root htmlFor="textfield-right-align" className="text-xs text-gray-500 dark:text-gray-400">
-                    아이콘 앞, 우측 정렬, 삭제
+                    아이콘 앞, 우측 정렬, 삭제, 숫자만
                   </Label.Root>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
                       <span className="font-mono text-[13px]">₩</span>
                     </div>
-                    {/* 입력시 삭제기능 추가 */}
+                    {/* 숫자만 입력 가능하도록 onChange 핸들러 수정 */}
                     <input
                       id="textfield-right-align"
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="0"
                       value={searchTextRight}
-                      onChange={(e) => setSearchTextRight(e.target.value)}
-                      // pl-10(왼), pr-4 → pr-10(오른쪽 삭제버튼과 겹치지 않도록)
+                      onChange={(e) => {
+                        const onlyNums = e.target.value.replace(/[^0-9]/g, "");
+                        setSearchTextRight(onlyNums);
+                      }}
                       className="h-[32px] w-full rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 pl-10 pr-10 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                     {searchTextRight && (
@@ -4209,6 +4213,20 @@ export default function Dashboard() {
             <Card title="Validation">
               <div className="space-y-4">
                 {/* 이메일 검증 에러 */}
+                {/* 검증 전 (normal) 예시 */}
+                <div className="flex flex-col gap-2">
+                  <Label.Root htmlFor="email-normal" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    이메일 주소 <span className="text-red-500">*</span>
+                  </Label.Root>
+                  <input
+                    id="email-normal"
+                    type="email"
+                    placeholder="email@example.com"
+                    className="h-[32px] rounded-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                  />
+                </div>
+
+                {/* 검증 에러 예시 */}
                 <div className="flex flex-col gap-2">
                   <Label.Root htmlFor="email-validation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     이메일 주소 <span className="text-red-500">*</span>
