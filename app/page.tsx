@@ -31,6 +31,9 @@ import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
+import { AccordionSection } from "./components/ui-sections/AccordionSection";
+import { AlertDialogSection } from "./components/ui-sections/AlertDialogSection";
+import { DatePickerSection } from "./components/ui-sections/DatePickerSection";
 
 // 검색용 샘플 데이터
 const sampleItems = [
@@ -372,11 +375,6 @@ export default function Dashboard() {
       }
     }
   }, []);
-
-  // 동적 import를 통한 코드 스플리팅
-  const LazyAccordionSection = React.lazy(() => import("./components/ui-sections/AccordionSection").then(module => ({ default: module.AccordionSection })));
-  const LazyAlertDialogSection = React.lazy(() => import("./components/ui-sections/AlertDialogSection").then(module => ({ default: module.AlertDialogSection })));
-  const LazyDatePickerSection = React.lazy(() => import("./components/ui-sections/DatePickerSection").then(module => ({ default: module.DatePickerSection })));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
@@ -955,7 +953,7 @@ export default function Dashboard() {
                   </button>
                 </Collapsible.Trigger>
                 <Collapsible.Content className="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden">
-                  <div className="pt-4 space-y-6">
+                  <div className="pt-3 space-y-4">
                     {/* 아이콘 데이터 */}
                     {(() => {
                       const icons = [
@@ -1550,10 +1548,10 @@ export default function Dashboard() {
                       ];
 
                       return (
-                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-3">
+                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 xl:grid-cols-16 2xl:grid-cols-24 gap-2">
                           {icons.map((icon, index) => (
                             <div key={index} className="space-y-2 group">
-                              <div className="flex flex-col items-center gap-2 p-3 border border-gray-200 dark:border-gray-800 rounded-sm hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+                              <div className="flex flex-col items-center gap-2 p-3 ">
                                 <div className="h-[48px] w-[48px] rounded-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" dangerouslySetInnerHTML={{ __html: icon.svg }} />
                                 </div>
@@ -1588,13 +1586,9 @@ export default function Dashboard() {
           </div>
 
           <div className="masonry-grid">
-            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
-              <LazyAccordionSection />
-            </React.Suspense>
+            <AccordionSection />
 
-            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
-              <LazyAlertDialogSection openAlertDialog={openAlertDialog} setOpenAlertDialog={setOpenAlertDialog} />
-            </React.Suspense>
+            <AlertDialogSection openAlertDialog={openAlertDialog} setOpenAlertDialog={setOpenAlertDialog} />
 
             {/* Aspect Ratio */}
             <Card title="Aspect Ratio">
@@ -2033,18 +2027,16 @@ export default function Dashboard() {
               </dl>
             </Card>
 
-            <React.Suspense fallback={<div className="mb-6 break-inside-avoid rounded-sm border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-900 p-6"><div className="h-20 animate-pulse bg-gray-200 dark:bg-gray-800 rounded"></div></div>}>
-              <LazyDatePickerSection
-                selectedDate={selectedDate}
-                tempSelectedDate={tempSelectedDate}
-                datePickerOpen={datePickerOpen}
-                setDatePickerOpen={setDatePickerOpen}
-                setTempSelectedDate={setTempSelectedDate}
-                handleDateSelect={handleDateSelect}
-                handleDateConfirm={handleDateConfirm}
-                handleDateCancel={handleDateCancel}
-              />
-            </React.Suspense>
+            <DatePickerSection
+              selectedDate={selectedDate}
+              tempSelectedDate={tempSelectedDate}
+              datePickerOpen={datePickerOpen}
+              setDatePickerOpen={setDatePickerOpen}
+              setTempSelectedDate={setTempSelectedDate}
+              handleDateSelect={handleDateSelect}
+              handleDateConfirm={handleDateConfirm}
+              handleDateCancel={handleDateCancel}
+            />
 
             {/* Date Range Picker */}
             <Card title="Date Range Picker">
@@ -3546,7 +3538,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">버튼 내 Spinner</p>
-                  <div className="flex flex-wrap items-center gap-2Label">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button className="h-[32px] px-4 rounded-sm bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-colors flex items-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                       <span className="text-sm font-medium">로딩 중...</span>

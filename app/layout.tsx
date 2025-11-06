@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Radix UI Dashboard",
-  description: "Next.js dashboard with all Radix UI components",
+  title: "Radix UI 컴포넌트 정의",
+  description: "Reacr, Next.js dashboard with all Radix UI components",
 };
 
 export default function RootLayout({

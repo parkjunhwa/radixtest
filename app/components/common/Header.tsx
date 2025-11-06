@@ -13,10 +13,10 @@ export const Header = function Header({ theme, onThemeChange }: HeaderProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Radix UI Dashboard
+              Radix UI 컴포넌트 정의
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              모든 Radix UI 컴포넌트 컬렉션 정의 - 박준화 수석
+              next.js 프로젝트를 위한 모든 Radix UI 컴포넌트 컬렉션 tailwind css 적용 정의 - 박준화 수석
             </p>
           </div>
           <div className="flex items-center gap-3">
